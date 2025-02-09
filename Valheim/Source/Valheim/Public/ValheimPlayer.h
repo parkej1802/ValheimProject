@@ -1,10 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+
+class UAC_BuildComponent;
+
 #include "ValheimPlayer.generated.h"
 
 UCLASS()
@@ -44,10 +45,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Turn;
 
-	// 좌우 회전
 	void Turn(const FInputActionValue& inputValue);
 
-	// 상하 회전
 	void LookUp(const FInputActionValue& inputValue);
 
 	// 사용자의 좌우 입력을 받아서 이동하고 싶다
@@ -59,13 +58,35 @@ public:
 
 	void InputJump(const FInputActionValue& inputValue);
 
-	// 이동속도
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
 	float WalkSpeed = 600.0f;
 
-	// 이동 방향
 	FVector Direction;
 
 	void Move(const FInputActionValue& inputValue);
-	
+
+// Building System
+public:
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	UAC_BuildComponent* BuildComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_BuildMode;
+
+	void BuildModeOn();
+	void DestroyComponent(UActorComponent* BC);
+
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_WheelUp;
+
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_WheelDown;
+
+	void WheelUp(const FInputActionValue& inputValue);
+	void WheelDown(const FInputActionValue& inputValue);
+
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_LeftMouseButton;
+
+	void LeftMouseButton(const FInputActionValue& inputValue);
 };

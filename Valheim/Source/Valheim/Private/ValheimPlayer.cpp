@@ -2,6 +2,7 @@
 
 
 #include "ValheimPlayer.h"
+#include "AC_BuildComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
@@ -37,6 +38,10 @@ AValheimPlayer::AValheimPlayer()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
 
+	// BuildingSystem
+	BuildComp = CreateDefaultSubobject<UAC_BuildComponent>(TEXT("BuildComp"));
+	
+
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +60,9 @@ void AValheimPlayer::BeginPlay()
 			subsystem->AddMappingContext(IMC_TPS, 0);
 		}
 	}
+
+	BuildComp->SetCameraBS(tpsCamComp);
+
 }
 
 // Called every frame
@@ -81,6 +89,10 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		PlayerInput->BindAction(IA_LookUp, ETriggerEvent::Triggered, this, &AValheimPlayer::LookUp);
 		PlayerInput->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AValheimPlayer::Move);
 		PlayerInput->BindAction(IA_Jump, ETriggerEvent::Started, this, &AValheimPlayer::InputJump);
+		PlayerInput->BindAction(IA_BuildMode, ETriggerEvent::Started, this, &AValheimPlayer::BuildModeOn);
+		PlayerInput->BindAction(IA_WheelUp, ETriggerEvent::Started, this, &AValheimPlayer::WheelUp);
+		PlayerInput->BindAction(IA_WheelDown, ETriggerEvent::Started, this, &AValheimPlayer::WheelDown);
+		PlayerInput->BindAction(IA_LeftMouseButton, ETriggerEvent::Started, this, &AValheimPlayer::LeftMouseButton);
 	}
 }
 
@@ -110,3 +122,61 @@ void AValheimPlayer::Move(const FInputActionValue& inputValue)
 	Direction.Y = value.Y;
 
 }
+
+void AValheimPlayer::BuildModeOn()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildModeOn"));
+	}
+	BuildComp->LaunchBuildMode();
+}
+
+void AValheimPlayer::DestroyComponent(UActorComponent* BC)
+{
+	BC->DestroyComponent();
+}
+
+void AValheimPlayer::WheelUp(const FInputActionValue& inputValue)
+{
+	if (BuildComp->IsBuildMode) {
+		int32 BuildDataSize = BuildComp->BuildableDataArray.Num() - 1;
+		int32 BuildIndex = BuildComp->BuildID;
+
+		if (BuildIndex < BuildDataSize) {
+			BuildIndex += 1;
+			BuildComp->BuildID = BuildIndex;
+		}
+
+		BuildComp->ChangeMesh();
+
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("WheelUp!"));
+	}
+}
+
+void AValheimPlayer::WheelDown(const FInputActionValue& inputValue)
+{
+	if (BuildComp->IsBuildMode) {
+		int32 BuildDataSize = BuildComp->BuildableDataArray.Num() - 1;
+		int32 BuildIndex = BuildComp->BuildID;
+		if (BuildIndex > 0) {
+			BuildIndex -= 1;
+			BuildComp->BuildID = BuildIndex;
+		}
+
+		BuildComp->ChangeMesh();
+
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("WheelDown!"));
+	}
+}
+
+void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
+{
+	if (BuildComp->IsBuildMode && BuildComp->CanBuild) {
+		BuildComp->SpawnBuild();
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBuild"));
+	}
+
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("LeftMouse!"));
+}
+
