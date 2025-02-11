@@ -3,8 +3,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Blueprint/UserWidget.h"
+#include "InventoryUI.h"
+#include "CraftingUI.h"
 
 class UAC_BuildComponent;
+class UAC_InventoryComponent;
 
 #include "ValheimPlayer.generated.h"
 
@@ -27,6 +31,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	APlayerController* pc;
 
 public:
 	UPROPERTY(EditDefaultsOnly, Category = Camera)
@@ -89,4 +95,40 @@ public:
 	class UInputAction* IA_LeftMouseButton;
 
 	void LeftMouseButton(const FInputActionValue& inputValue);
+
+// Crafting System
+public:
+	UPROPERTY(EditAnywhere, Category = CraftingSystem)
+	class UInputAction* IA_CraftMode;
+
+	UPROPERTY(EditAnywhere, Category = CraftingSystem)
+	TSubclassOf<UUserWidget> CraftWidget;
+
+	void CraftModeOn();
+	bool IsCraftModeOn = false;
+
+	class UCraftingUI* CraftUI;
+
+// Inventory System
+public:
+	UPROPERTY(EditAnywhere, Category = InventorySystem)
+	class UInputAction* IA_InventoryMode;
+
+	UPROPERTY(EditAnywhere, Category = InventorySystem)
+	class UInputAction* IA_PickUp;
+
+	void PickUp();
+
+	void InventoryModeOn();
+	bool IsInventoryModeOn = false;
+
+	UPROPERTY(EditAnywhere, Category = InventorySystem)
+	TSubclassOf<UUserWidget> InventoryWidget;
+
+	class UInventoryUI* InventoryUI;
+
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	UAC_InventoryComponent* InventoryComp;
+
+
 };
