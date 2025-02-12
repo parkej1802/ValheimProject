@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "BuildInterface.h"
 #include "S_Buildables.h"
+#include "Components/StaticMeshComponent.h"
 #include "Build_Foundation.generated.h"
 
 UCLASS()
@@ -41,6 +42,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* Wall4;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* Floor;
 
 	TArray<UBoxComponent*> BoxCompArray;
 

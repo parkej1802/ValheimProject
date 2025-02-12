@@ -136,7 +136,7 @@ void AValheimPlayer::BuildModeOn()
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildModeOn"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildModeOn"));
 	}
 	BuildComp->LaunchBuildMode();
 }
@@ -189,6 +189,8 @@ void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("LeftMouse!"));
 }
 
+
+
 void AValheimPlayer::CraftModeOn()
 {
 	if (IsCraftModeOn) {
@@ -220,7 +222,8 @@ void AValheimPlayer::CraftModeOn()
 
 void AValheimPlayer::PickUp()
 {
-	InventoryComp->DetectPlayer();
+	//InventoryComp->DetectPlayer();
+	InventoryComp->PickUpItem();
 }
 
 void AValheimPlayer::InventoryModeOn()
@@ -243,6 +246,7 @@ void AValheimPlayer::InventoryModeOn()
 		if (InventoryUI)
 		{
 			InventoryUI->AddToViewport();
+			InventoryUI->LoadInventory(InventoryComp);
 		}
 		IsInventoryModeOn = true;
 
@@ -250,8 +254,6 @@ void AValheimPlayer::InventoryModeOn()
 		pc->SetInputMode(UIInputMode);
 		pc->bShowMouseCursor = true;
 	}
-	
 
-	
 }
 

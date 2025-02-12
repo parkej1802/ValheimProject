@@ -45,5 +45,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = RootScene)
 	FText Description;
 
-	FInventoryStruct GetItemData();
+	//FInventoryStruct GetItemData();
 };

@@ -129,6 +129,4 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
 	UAC_InventoryComponent* InventoryComp;
-
-
 };

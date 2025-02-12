@@ -3,6 +3,7 @@
 
 #include "AC_InventoryComponent.h"
 #include "ValheimPlayer.h"
+#include "InventoryUI.h"
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values for this component's properties
@@ -11,7 +12,7 @@ UAC_InventoryComponent::UAC_InventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	ItemsInInventory.SetNum(10);
 }
 
 
@@ -60,7 +61,7 @@ void UAC_InventoryComponent::DetectPlayer()
 		FString HitMessage = FString::Printf(TEXT("Hit Actor: %s at Impact Point: %s"), *HitResult.GetActor()->GetName(), *HitResult.ImpactPoint.ToString());
 		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, HitMessage);
 		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 50.0f, 12, FColor::Red, false, 1.0f);
-		TryAddItem(HitResult.GetActor());
+		//TryAddItem(HitResult.GetActor());
 	}
 	else
 	{
@@ -72,11 +73,74 @@ void UAC_InventoryComponent::DetectPlayer()
 void UAC_InventoryComponent::TryAddItem(AActor* Actor)
 {
 	AMasterItem* MI = Cast<AMasterItem>(Actor);
-	ItemData = MI->GetItemData();
+	//ItemData = MI->GetItemData();
 }
 
 void UAC_InventoryComponent::IsItemAlreadyInInventory()
 {
+	
+}
 
+void UAC_InventoryComponent::PickUpItem()
+{
+	FHitResult HitResult;
+
+	FCollisionQueryParams CollisionParams;
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		CollisionParams.AddIgnoredActor(OwnerActor);
+	}
+
+	FVector PlayerLocation = OwnerActor->GetActorLocation();
+
+	FVector StartLocationTrace = PlayerLocation - FVector(0.0f, 0.0f, 65.0f);
+
+	bool bHit = GetWorld()->SweepSingleByChannel(HitResult, StartLocationTrace, StartLocationTrace, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(120.0f), CollisionParams);
+	DrawDebugSphere(GetWorld(), StartLocationTrace, 120, 12, FColor::Red, false, 2.0f);
+	DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 50.0f, 12, FColor::Red, false, 1.0f);
+
+	if (bHit) {
+		DrawDebugSphere(GetWorld(), StartLocationTrace, 120, 12, FColor::Red, false, 2.0f);
+		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 50.0f, 12, FColor::Red, false, 1.0f);
+		FString HitMessage = FString::Printf(TEXT("Hit Actor: %s at Impact Point: %s"), *HitResult.GetActor()->GetName(), *HitResult.ImpactPoint.ToString());
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, HitMessage);
+
+		AItem* NearItem = Cast<AItem>(HitResult.GetActor());
+
+		if (IsValid(NearItem)) {
+			bool bItemAdded = false;
+
+			for (int32 i = 0; i < ItemsInInventory.Num(); i++) {
+				if (ItemsInInventory[i].Name.EqualTo(NearItem->Item.Name) && NearItem->Item.Stackable) {
+					int32 TotalQuantity = ItemsInInventory[i].Quantity + NearItem->Item.Quantity;
+					if (TotalQuantity <= 64) {
+						ItemsInInventory[i].Quantity = TotalQuantity;
+						ItemsInInventory[i].Name = NearItem->Item.Name;
+						ItemsInInventory[i].Stackable = NearItem->Item.Stackable;
+						ItemsInInventory[i].Thumbnail = NearItem->Item.Thumbnail;
+						ItemsInInventory[i].Mesh = NearItem->Item.Mesh;
+						bItemAdded = true;
+						NearItem->Destroy();
+						break;
+					}
+				}
+			}
+			if (!bItemAdded)
+			{
+				for (int32 i = 0; i < ItemsInInventory.Num(); i++)
+				{
+					if (ItemsInInventory[i].Quantity == 0)
+					{
+						ItemsInInventory[i] = NearItem->Item;
+						NearItem->Destroy();
+						bItemAdded = true;
+						break;
+					}
+				}
+			}
+		}
+	}
 }
 

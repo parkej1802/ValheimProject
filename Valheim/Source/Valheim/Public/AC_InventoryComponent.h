@@ -7,13 +7,15 @@
 #include "Camera/CameraComponent.h"
 #include "MasterItem.h"
 #include "S_Inventory.h"
+#include "Item.h"
 
 class AValheimPlayer;
+class UInventoryUI;
 
 #include "AC_InventoryComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class VALHEIM_API UAC_InventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -40,4 +42,18 @@ public:
 	FInventoryStruct ItemData;
 
 	void IsItemAlreadyInInventory();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory)
+	TArray<FInventoryStruct> ItemsInInventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory)
+	TSubclassOf<UUserWidget> InventoryWidget;
+
+	class UInventoryUI* InventoryUI;
+
+	void PickUpItem();
+
+
+	
 };

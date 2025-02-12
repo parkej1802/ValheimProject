@@ -136,14 +136,16 @@ void UAC_BuildComponent::BuildCycle()
 		HitActor = HitResult.GetActor();
 		HitComponent = HitResult.GetComponent();
 
-		/*if (HitComponent)
+		/*
+		if (HitComponent)
 		{
 			FString ComponentName = HitComponent->GetName();
 			if (GEngine)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("HitComponent Name: %s"), *ComponentName));
 			}
-		}*/
+		}
+		*/
 
 		SetBuildTransform(&SetTransform);
 
