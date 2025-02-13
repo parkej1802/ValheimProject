@@ -33,9 +33,32 @@ void UInventorySlot::OnItemButtonClicked()
 		APawn* PlayerPawn = PlayerController->GetPawn();
 		if (PlayerPawn)
 		{
-			AItem* SpawnedItem = GetWorld()->SpawnActor<AItem>(AItem::StaticClass(), PlayerPawn->GetActorTransform());
-			InventoryComp->ItemsInInventory[Index] = FInventoryStruct();
-			InventoryUI->LoadInventory(InventoryComp);
+			if (InventoryComp) {
+				Item = InventoryComp->ItemsInInventory[Index];
+				InventoryComp->ItemsInInventory[Index] = FInventoryStruct();
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("InventoryComp in inventorySlot"));
+
+				FVector SpawnLocation = PlayerPawn->GetActorLocation() + FVector(50.0f, 0.0f, 0.0f);
+				FTransform SpawnTransform = PlayerPawn->GetActorTransform();
+				SpawnTransform.SetLocation(SpawnLocation);
+
+				AItem* SpawnedItem = GetWorld()->SpawnActor<AItem>(ItemClass, SpawnTransform);
+				if (SpawnedItem) {
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Item Spawn in inventorySlot!"));
+					SpawnedItem->SetItemData(Item);
+				}
+			}
+			if (InventoryWidget)
+			{
+				InventoryUI = CreateWidget<UInventoryUI>(GetWorld(), InventoryWidget);
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("InventoryWidget in inventorySlot"));
+			}
+			if (InventoryUI)
+			{
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("InventoryUI in inventorySlot"));
+				//InventoryUI->AddToViewport();
+				InventoryUI->LoadInventory(InventoryComp);
+			}
 		}
 	}
 }	

@@ -32,5 +32,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Inventory, meta = (ExposeOnSpawn = "true"))
 	FInventoryStruct Item;
 
+	void SetItemData(FInventoryStruct NewItem);
+
 
 };

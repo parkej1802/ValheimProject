@@ -24,7 +24,7 @@ void UInventoryUI::LoadInventory(UAC_InventoryComponent* IC)
 
 		if (InventorySlotUI)
 		{
-
+			
 			InventorySlotUI->InventoryComp = IC;
 			InventorySlotUI->Index = i;
 

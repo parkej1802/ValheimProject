@@ -128,5 +128,5 @@ public:
 	class UInventoryUI* InventoryUI;
 
 	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
-	UAC_InventoryComponent* InventoryComp;
+	class UAC_InventoryComponent* InventoryComp;
 };

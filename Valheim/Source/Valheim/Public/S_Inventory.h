@@ -6,6 +6,7 @@
 #include "ItemType.h"
 #include "Engine/Texture2D.h"
 #include "Engine/StaticMesh.h"
+
 #include "S_Inventory.generated.h"
 
 USTRUCT(BlueprintType)

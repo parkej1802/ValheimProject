@@ -49,11 +49,19 @@ public:
 	int32 Index;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
-	UAC_InventoryComponent* InventoryComp;
+	class UAC_InventoryComponent* InventoryComp;
 
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
-	UInventoryUI* InventoryUI;
+	TSubclassOf<UUserWidget> InventoryWidget;
+
+	class UInventoryUI* InventoryUI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
+	class AItem* ItemData;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
+    TSubclassOf<AItem> ItemClass;
 
 	virtual void NativeConstruct() override;
 

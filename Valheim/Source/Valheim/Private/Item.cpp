@@ -31,3 +31,12 @@ void AItem::Tick(float DeltaTime)
 
 }
 
+void AItem::SetItemData(FInventoryStruct NewItem)
+{
+	Item = NewItem;
+
+	if (Item.Mesh) {
+		MeshComp->SetStaticMesh(Item.Mesh);
+	}
+}
+

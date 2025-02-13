@@ -12,7 +12,7 @@ UAC_InventoryComponent::UAC_InventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	ItemsInInventory.SetNum(10);
+	ItemsInInventory.SetNum(15);
 }
 
 
@@ -98,14 +98,12 @@ void UAC_InventoryComponent::PickUpItem()
 	FVector StartLocationTrace = PlayerLocation - FVector(0.0f, 0.0f, 65.0f);
 
 	bool bHit = GetWorld()->SweepSingleByChannel(HitResult, StartLocationTrace, StartLocationTrace, FQuat::Identity, ECC_Visibility, FCollisionShape::MakeSphere(120.0f), CollisionParams);
-	DrawDebugSphere(GetWorld(), StartLocationTrace, 120, 12, FColor::Red, false, 2.0f);
-	DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 50.0f, 12, FColor::Red, false, 1.0f);
 
 	if (bHit) {
-		DrawDebugSphere(GetWorld(), StartLocationTrace, 120, 12, FColor::Red, false, 2.0f);
-		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 50.0f, 12, FColor::Red, false, 1.0f);
-		FString HitMessage = FString::Printf(TEXT("Hit Actor: %s at Impact Point: %s"), *HitResult.GetActor()->GetName(), *HitResult.ImpactPoint.ToString());
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, HitMessage);
+		//DrawDebugSphere(GetWorld(), StartLocationTrace, 120, 12, FColor::Red, false, 2.0f);
+		//DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 50.0f, 12, FColor::Red, false, 1.0f);
+		//FString HitMessage = FString::Printf(TEXT("Hit Actor: %s at Impact Point: %s"), *HitResult.GetActor()->GetName(), *HitResult.ImpactPoint.ToString());
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, HitMessage);
 
 		AItem* NearItem = Cast<AItem>(HitResult.GetActor());
 
