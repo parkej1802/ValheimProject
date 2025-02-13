@@ -136,6 +136,8 @@ void UAC_BuildComponent::BuildCycle()
 		HitActor = HitResult.GetActor();
 		HitComponent = HitResult.GetComponent();
 
+
+
 		/*
 		if (HitComponent)
 		{
@@ -265,6 +267,19 @@ void UAC_BuildComponent::SpawnBuild()
 	AActor* SpawnedActor = GetWorld()->SpawnActor<AActor>(BuildingActor, BuildTransform);
 
 	//IBuildInterface::Execute_SetMesh(SpawnedActor, BuildingData.Mesh);
+}
+
+void UAC_BuildComponent::DestroyBuild()
+{
+	if (HitActor && HitActor->Implements<UBuildInterface>()) {
+		IBuildInterface* BuildActor = Cast<IBuildInterface>(HitActor);
+
+		if (BuildActor)
+		{
+			HitActor->Destroy();
+			HitActor = nullptr;
+		}
+	}
 }
 
 FBuildDetectResult UAC_BuildComponent::DetectBuildBox()

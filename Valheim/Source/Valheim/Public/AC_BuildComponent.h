@@ -94,6 +94,7 @@ public:
 	void GetDataTableRowNames();
 	void ChangeMesh();
 	void SpawnBuild();
+	void DestroyBuild();
 
 	bool LocalFound = false;
 	FBuildDetectResult DetectBuildBox();

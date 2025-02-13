@@ -104,7 +104,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
 	class UInputAction* IA_LeftMouseButton;
 
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_RightMouseButton;
+
 	void LeftMouseButton(const FInputActionValue& inputValue);
+	void RightMouseButton(const FInputActionValue& inputValue);
+
 
 // Crafting System
 public:
