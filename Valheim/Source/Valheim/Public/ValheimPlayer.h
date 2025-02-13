@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryUI.h"
 #include "CraftingUI.h"
+#include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputAction.h"
 
 class UAC_BuildComponent;
 class UAC_InventoryComponent;
@@ -51,6 +52,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Turn;
 
+
 	void Turn(const FInputActionValue& inputValue);
 
 	void LookUp(const FInputActionValue& inputValue);
@@ -70,6 +72,14 @@ public:
 	FVector Direction;
 
 	void Move(const FInputActionValue& inputValue);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Sprint;
+	
+	// 구르기
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+
+	class UInputAction* IA_Roll;
 
 // Building System
 public:
@@ -129,4 +139,22 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
 	class UAC_InventoryComponent* InventoryComp;
+
+protected:
+	// 달리기
+	void SprintStart(const FInputActionValue& inputValue);
+	void SprintEnd(const FInputActionValue& inputValue);
+
+	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	float SprintSpeed = 900.0f;
+
+
+	// 구르기
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerSetting)
+	bool Rollcheck = false;
+	void Roll(const FInputActionValue& inputValue);
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerSetting)
+	float RollSpeed = 1800.0f;
+
 };

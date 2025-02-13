@@ -7,7 +7,12 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
 #include "AC_InventoryComponent.h"
+
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Character.h"
+
 
 
 // Sets default values
@@ -17,7 +22,7 @@ AValheimPlayer::AValheimPlayer()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshTemp(
-		TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequin_UE4/Meshes/SK_Mannequin.SK_Mannequin'"));
+		TEXT("/Script/Engine.SkeletalMesh'/Game/UP/VIking/Brute.Brute'"));
 
 	if (MeshTemp.Succeeded()) {
 		GetMesh()->SetSkeletalMesh(MeshTemp.Object);
@@ -98,9 +103,14 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		PlayerInput->BindAction(IA_WheelUp, ETriggerEvent::Started, this, &AValheimPlayer::WheelUp);
 		PlayerInput->BindAction(IA_WheelDown, ETriggerEvent::Started, this, &AValheimPlayer::WheelDown);
 		PlayerInput->BindAction(IA_LeftMouseButton, ETriggerEvent::Started, this, &AValheimPlayer::LeftMouseButton);
+
 		PlayerInput->BindAction(IA_CraftMode, ETriggerEvent::Started, this, &AValheimPlayer::CraftModeOn);
 		PlayerInput->BindAction(IA_InventoryMode, ETriggerEvent::Started, this, &AValheimPlayer::InventoryModeOn);
 		PlayerInput->BindAction(IA_PickUp, ETriggerEvent::Started, this, &AValheimPlayer::PickUp);
+
+		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AValheimPlayer::SprintStart);
+		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintEnd);
+		PlayerInput->BindAction(IA_Roll, ETriggerEvent::Started, this, &AValheimPlayer::Roll);
 
 	}
 }
@@ -127,9 +137,31 @@ void AValheimPlayer::Move(const FInputActionValue& inputValue)
 	FVector2D value = inputValue.Get<FVector2D>();
 
 	Direction.X = value.X;
-
 	Direction.Y = value.Y;
 
+	//GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void AValheimPlayer::SprintStart(const FInputActionValue& inputValue)
+{
+	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Sprint"));
+}
+
+void AValheimPlayer::SprintEnd(const FInputActionValue& inputValue)
+{
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SprintEnd"));
+}
+
+void AValheimPlayer::Roll(const FInputActionValue& inputValue)
+{
+	GetMesh()->GetAnimInstance();
+
+
+	GetCharacterMovement()->MaxWalkSpeed = RollSpeed;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Roll"));
 }
 
 void AValheimPlayer::BuildModeOn()
@@ -256,4 +288,5 @@ void AValheimPlayer::InventoryModeOn()
 	}
 
 }
+
 
