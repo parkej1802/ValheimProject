@@ -35,6 +35,10 @@ public:
 	class UBoxComponent* BoxComp4;
 
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
+	class UBoxComponent* DoorBoxComp;
+
+
+	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	TArray<UBoxComponent*> BoxCompArray;
 
 

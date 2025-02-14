@@ -237,14 +237,14 @@ void AValheimPlayer::RightMouseButton(const FInputActionValue& inputValue)
 void AValheimPlayer::RotateRightR(const FInputActionValue& inputValue)
 {
 	if (BuildComp->IsBuildMode) {
-		BuildComp->RotateRight();
+
 	}
 }
 
 void AValheimPlayer::RotateLeftQ(const FInputActionValue& inputValue)
 {
 	if (BuildComp->IsBuildMode) {
-		BuildComp->RotateLeft();
+
 	}
 }
 

@@ -282,22 +282,15 @@ void UAC_BuildComponent::DestroyBuild()
 
 void UAC_BuildComponent::RotateRight()
 {
-	FQuat NewRotation = FQuat(FRotator(0.0f, 90.0f * GetWorld()->GetDeltaSeconds(), 0.0f));
-
-	BuildTransform.SetRotation(BuildTransform.GetRotation() * NewRotation);
-
+	BuildTransform.SetRotation(BuildTransform.GetRotation() + FQuat(FRotator(0.0f, 90.0f, 0.0f)));
 	BuildGhost->SetWorldTransform(BuildTransform);
-	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Rotating RIght!"));
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Rotating RIght!"));
 
 }
 
 void UAC_BuildComponent::RotateLeft()
 {
-	FQuat NewRotation = FQuat(FRotator(0.0f, -90.0f * GetWorld()->GetDeltaSeconds(), 0.0f));
-
-	BuildTransform.SetRotation(BuildTransform.GetRotation() * NewRotation);
-	BuildGhost->SetWorldTransform(BuildTransform);
-	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Rotating RIght!"));
+	
 }
 
 FBuildDetectResult UAC_BuildComponent::DetectBuildBox()

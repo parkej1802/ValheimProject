@@ -110,6 +110,15 @@ public:
 	void LeftMouseButton(const FInputActionValue& inputValue);
 	void RightMouseButton(const FInputActionValue& inputValue);
 
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_RotateRightR;
+
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_RotateLeftQ;
+
+	void RotateRightR(const FInputActionValue& inputValue);
+	void RotateLeftQ(const FInputActionValue& inputValue);
+
 
 // Crafting System
 public:

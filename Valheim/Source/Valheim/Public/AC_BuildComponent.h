@@ -95,6 +95,8 @@ public:
 	void ChangeMesh();
 	void SpawnBuild();
 	void DestroyBuild();
+	void RotateRight();
+	void RotateLeft();
 
 	bool LocalFound = false;
 	FBuildDetectResult DetectBuildBox();
