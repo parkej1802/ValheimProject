@@ -7,8 +7,12 @@
 #include "Camera/CameraComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+
+#include "AC_InventoryComponent.h"
+
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
+
 
 
 // Sets default values
@@ -42,6 +46,10 @@ AValheimPlayer::AValheimPlayer()
 
 	// BuildingSystem
 	BuildComp = CreateDefaultSubobject<UAC_BuildComponent>(TEXT("BuildComp"));
+
+
+	// InventorySystem
+	InventoryComp = CreateDefaultSubobject<UAC_InventoryComponent>(TEXT("InventoryComp"));
 	
 
 }
@@ -51,7 +59,7 @@ void AValheimPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	auto pc = Cast<APlayerController>(Controller);
+	pc = Cast<APlayerController>(Controller);
 
 	if (pc)
 	{
@@ -64,7 +72,7 @@ void AValheimPlayer::BeginPlay()
 	}
 
 	BuildComp->SetCameraBS(tpsCamComp);
-
+	InventoryComp->ConnectedActor = this;
 }
 
 // Called every frame
@@ -95,9 +103,17 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		PlayerInput->BindAction(IA_WheelUp, ETriggerEvent::Started, this, &AValheimPlayer::WheelUp);
 		PlayerInput->BindAction(IA_WheelDown, ETriggerEvent::Started, this, &AValheimPlayer::WheelDown);
 		PlayerInput->BindAction(IA_LeftMouseButton, ETriggerEvent::Started, this, &AValheimPlayer::LeftMouseButton);
+		PlayerInput->BindAction(IA_RightMouseButton, ETriggerEvent::Started, this, &AValheimPlayer::RightMouseButton);
+
+		PlayerInput->BindAction(IA_CraftMode, ETriggerEvent::Started, this, &AValheimPlayer::CraftModeOn);
+		PlayerInput->BindAction(IA_InventoryMode, ETriggerEvent::Started, this, &AValheimPlayer::InventoryModeOn);
+		PlayerInput->BindAction(IA_PickUp, ETriggerEvent::Started, this, &AValheimPlayer::PickUp);
+
 		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AValheimPlayer::SprintStart);
 		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintEnd);
 		PlayerInput->BindAction(IA_Roll, ETriggerEvent::Started, this, &AValheimPlayer::Roll);
+		
+
 	}
 }
 
@@ -154,7 +170,7 @@ void AValheimPlayer::BuildModeOn()
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildModeOn"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildModeOn"));
 	}
 	BuildComp->LaunchBuildMode();
 }
@@ -201,12 +217,85 @@ void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
 {
 	if (BuildComp->IsBuildMode && BuildComp->CanBuild) {
 		BuildComp->SpawnBuild();
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBuild"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBuild"));
 	}
 
 	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("LeftMouse!"));
 }
 
 
+
+void AValheimPlayer::RightMouseButton(const FInputActionValue& inputValue)
+{
+	if (BuildComp->IsBuildMode) {
+		BuildComp->DestroyBuild();
+	}
+}
+
+void AValheimPlayer::CraftModeOn()
+{
+	if (IsCraftModeOn) {
+		if (CraftUI) {
+			CraftUI->RemoveFromParent();
+		}
+		IsCraftModeOn = false;
+		FInputModeGameOnly GameInputMode;
+		pc->SetInputMode(GameInputMode);
+		pc->bShowMouseCursor = false;
+	}
+	else {
+		if (CraftWidget)
+		{
+			CraftUI = CreateWidget<UCraftingUI>(GetWorld(), CraftWidget);
+		}
+		if (CraftUI)
+		{
+			CraftUI->AddToViewport();
+		}
+		IsCraftModeOn = true;
+
+		FInputModeGameAndUI UIInputMode;
+		pc->SetInputMode(UIInputMode);
+		pc->bShowMouseCursor = true;
+	
+	}
+}
+
+void AValheimPlayer::PickUp()
+{
+	//InventoryComp->DetectPlayer();
+	InventoryComp->PickUpItem();
+}
+
+void AValheimPlayer::InventoryModeOn()
+{
+	if (IsInventoryModeOn) {
+		if (InventoryUI) {
+			InventoryUI->RemoveFromParent();
+		}
+		IsInventoryModeOn = false;
+
+		FInputModeGameOnly GameInputMode;
+		pc->SetInputMode(GameInputMode);
+		pc->bShowMouseCursor = false;
+	}
+	else {
+		if (InventoryWidget)
+		{
+			InventoryUI = CreateWidget<UInventoryUI>(GetWorld(), InventoryWidget);
+		}
+		if (InventoryUI)
+		{
+			InventoryUI->AddToViewport();
+			InventoryUI->LoadInventory(InventoryComp);
+		}
+		IsInventoryModeOn = true;
+
+		FInputModeGameAndUI UIInputMode;
+		pc->SetInputMode(UIInputMode);
+		pc->bShowMouseCursor = true;
+	}
+
+}
 
 
