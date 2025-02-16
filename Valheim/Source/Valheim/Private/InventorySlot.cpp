@@ -3,6 +3,7 @@
 
 #include "InventorySlot.h"
 #include "InventoryUI.h"
+#include "ValheimPlayer.h"
 
 void UInventorySlot::NativeConstruct()
 {
@@ -44,7 +45,7 @@ void UInventorySlot::OnItemButtonClicked()
 
 				AItem* SpawnedItem = GetWorld()->SpawnActor<AItem>(ItemClass, SpawnTransform);
 				if (SpawnedItem) {
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Item Spawn in inventorySlot!"));
+					// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Item Spawn in inventorySlot!"));
 					SpawnedItem->SetItemData(Item);
 				}
 			}
@@ -56,8 +57,10 @@ void UInventorySlot::OnItemButtonClicked()
 			if (InventoryUI)
 			{
 				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("InventoryUI in inventorySlot"));
-				//InventoryUI->AddToViewport();
+				//PlayerPawn->InventoryUI->RemoveFromParent();
 				InventoryUI->LoadInventory(InventoryComp);
+				//InventoryUI->AddToViewport();
+				
 			}
 		}
 	}

@@ -21,7 +21,7 @@ ABuild_Wall::ABuild_Wall()
 	BoxComp3->SetupAttachment(RootComponent);
 	BoxComp3->SetRelativeLocation(FVector(00.0f, 200.0f, 400.0f));
 	BoxComp3->SetBoxExtent(FVector(200.0f, 200.0f, 10.0f));
-	BoxComp3->SetCollisionProfileName(TEXT("Floorrace"));
+	BoxComp3->SetCollisionProfileName(TEXT("FloorTrace"));
 
 	BoxComp4 = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp4"));
 	BoxComp4->SetupAttachment(RootComponent);

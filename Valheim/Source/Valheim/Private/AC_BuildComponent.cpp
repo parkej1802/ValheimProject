@@ -28,7 +28,7 @@ void UAC_BuildComponent::BeginPlay()
 	{
 		PlayerCharacter = Cast<AValheimPlayer>(Owner);
 		if (PlayerCharacter) {
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerCharacter!"));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerCharacter!"));
 		}
 		
 		FString DataTablePath = TEXT("/Game/UP/BuildingMaterial/Buildable/S_BuildableDB.S_BuildableDB");
@@ -227,7 +227,7 @@ void UAC_BuildComponent::GetDataTableRowNames()
 {
 	if (BuildableDB)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildableDB is valid!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildableDB is valid!"));
 		TArray<FName> RowNames = BuildableDB->GetRowNames();
 
 		for (FName& RowName : RowNames)
@@ -236,6 +236,7 @@ void UAC_BuildComponent::GetDataTableRowNames()
 			if (RowData)
 			{
 				BuildableDataArray.Add(*RowData);
+				BuildableDataMap.Add(RowName, *RowData);
 				
 			}
 		}
@@ -259,6 +260,7 @@ void UAC_BuildComponent::ChangeMesh()
 void UAC_BuildComponent::SpawnBuild()
 {
 	FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
+	//FBuildingStruct& BuildingData = BuildableDataMap["Floor"];
 
 	TSubclassOf<AActor> BuildingActor = BuildingData.Actor;
 

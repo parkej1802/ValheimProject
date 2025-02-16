@@ -42,6 +42,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	void LoadInventory(UAC_InventoryComponent* IC);
+	void UpdateInventory(UAC_InventoryComponent* IC);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UUserWidget> InventorySlotWidget;

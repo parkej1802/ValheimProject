@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 
 #include "AC_InventoryComponent.h"
+#include "AC_CraftingComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
@@ -51,7 +52,8 @@ AValheimPlayer::AValheimPlayer()
 	// InventorySystem
 	InventoryComp = CreateDefaultSubobject<UAC_InventoryComponent>(TEXT("InventoryComp"));
 	
-
+	// CraftingSystem
+	CraftingComp = CreateDefaultSubobject<UAC_CraftingComponent>(TEXT("CraftingComp"));
 }
 
 // Called when the game starts or when spawned
@@ -267,6 +269,7 @@ void AValheimPlayer::CraftModeOn()
 		if (CraftUI)
 		{
 			CraftUI->AddToViewport();
+			CraftUI->LoadCraftInventory(CraftingComp);
 		}
 		IsCraftModeOn = true;
 

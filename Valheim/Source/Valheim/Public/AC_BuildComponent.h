@@ -76,6 +76,9 @@ public:
     TArray<FBuildingStruct> BuildableDataArray;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
+	TMap<FName, FBuildingStruct> BuildableDataMap;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
 	AActor* HitActor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)

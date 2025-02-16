@@ -14,6 +14,8 @@
 #include "AC_InventoryComponent.h"
 
 class UInventoryUI;
+class AValheimPlayer;
+
 #include "InventorySlot.generated.h"
 
 /**

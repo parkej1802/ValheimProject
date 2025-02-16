@@ -10,6 +10,7 @@
 
 class UAC_BuildComponent;
 class UAC_InventoryComponent;
+class UAC_CraftingComponent;
 
 #include "ValheimPlayer.generated.h"
 
@@ -132,6 +133,9 @@ public:
 	bool IsCraftModeOn = false;
 
 	class UCraftingUI* CraftUI;
+
+	UPROPERTY(EditAnywhere, Category = CraftingSystem)
+	class UAC_CraftingComponent* CraftingComp;
 
 // Inventory System
 public:
