@@ -63,15 +63,16 @@ void UAC_BuildComponent::BuildDelay()
 	if (IsBuildMode)
 	{
 		FTimerHandle TH_DelayManager;
-		GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, this, &UAC_BuildComponent::BuildCycle, 0.01f, false);
+		//GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, this, &UAC_BuildComponent::BuildCycle, 0.01f, false);
 	}
 	else {
 		//StopBuildMode();
 	}
 }
 
-void UAC_BuildComponent::SpawnBuildGhost()
+void UAC_BuildComponent::SpawnBuildGhost(FName BuildingName)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SpawnBuildGhost"));
 	if (PlayerCharacter)
 	{
 		UStaticMeshComponent* NewBuildGhost = Cast<UStaticMeshComponent>(
@@ -81,7 +82,7 @@ void UAC_BuildComponent::SpawnBuildGhost()
 		{
 			BuildGhost = NewBuildGhost;
 
-			FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
+			FBuildingStruct& BuildingData = BuildableDataMap[BuildingName];
 
 			UStaticMesh* MeshAsset = BuildingData.Mesh;
 
@@ -100,8 +101,10 @@ void UAC_BuildComponent::SpawnBuildGhost()
 	}
 }
 
-void UAC_BuildComponent::BuildCycle()
+void UAC_BuildComponent::BuildCycle(FName BuildingName)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Buil Cycle!"));
+
 	FVector CameraLocation = CameraBS->GetComponentLocation();
 	FVector CameraForwardVector = CameraBS->GetForwardVector();
 	
@@ -118,7 +121,7 @@ void UAC_BuildComponent::BuildCycle()
 		CollisionParams.AddIgnoredActor(OwnerActor);
 	}
 
-	FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
+	FBuildingStruct& BuildingData = BuildableDataMap[BuildingName];
 
 	TEnumAsByte<ETraceTypeQuery> TraceInfo = BuildingData.TraceType;
 
@@ -199,16 +202,18 @@ void UAC_BuildComponent::GiveBuildColor(bool isGreen)
 	BuildGhost->SetWorldTransform(BuildTransform);
 }
 
-void UAC_BuildComponent::LaunchBuildMode()
+void UAC_BuildComponent::LaunchBuildMode(FName BuildingName)
 {
 	if (IsBuildMode)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode True"));
 		StopBuildMode();
 	}
 	else {
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode false"));
 		IsBuildMode = true;
-		SpawnBuildGhost();
-		BuildCycle();
+		SpawnBuildGhost(BuildingName);
+		BuildCycle(BuildingName);
 	}
 }
 
@@ -257,10 +262,10 @@ void UAC_BuildComponent::ChangeMesh()
 	}
 }
 
-void UAC_BuildComponent::SpawnBuild()
+void UAC_BuildComponent::SpawnBuild(FName BuildingName)
 {
-	FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
-	//FBuildingStruct& BuildingData = BuildableDataMap["Floor"];
+	//FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
+	FBuildingStruct& BuildingData = BuildableDataMap[BuildingName];
 
 	TSubclassOf<AActor> BuildingActor = BuildingData.Actor;
 

@@ -89,14 +89,14 @@ public:
 // Build Functions
 public:
 	void BuildDelay();
-	void SpawnBuildGhost();
-	void BuildCycle();
+	void SpawnBuildGhost(FName BuildingName);
+	void BuildCycle(FName BuildingName);
 	void GiveBuildColor(bool isGreen);
-	void LaunchBuildMode();
+	void LaunchBuildMode(FName BuildingName);
 	void StopBuildMode();
 	void GetDataTableRowNames();
 	void ChangeMesh();
-	void SpawnBuild();
+	void SpawnBuild(FName BuildingName);
 	void DestroyBuild();
 	void RotateRight();
 	void RotateLeft();

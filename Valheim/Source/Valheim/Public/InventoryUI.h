@@ -48,4 +48,6 @@ public:
 	TSubclassOf<UUserWidget> InventorySlotWidget;
 
 	class UInventorySlot* InventorySlotUI;
+
+
 };

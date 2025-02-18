@@ -75,6 +75,7 @@ void AValheimPlayer::BeginPlay()
 
 	BuildComp->SetCameraBS(tpsCamComp);
 	InventoryComp->ConnectedActor = this;
+	CraftingSlotUI->BuildComp = BuildComp;
 }
 
 // Called every frame
@@ -176,7 +177,7 @@ void AValheimPlayer::BuildModeOn()
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildModeOn"));
 	}
-	BuildComp->LaunchBuildMode();
+	//BuildComp->LaunchBuildMode();
 }
 
 void AValheimPlayer::DestroyComponent(UActorComponent* BC)
@@ -220,7 +221,8 @@ void AValheimPlayer::WheelDown(const FInputActionValue& inputValue)
 void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
 {
 	if (BuildComp->IsBuildMode && BuildComp->CanBuild) {
-		BuildComp->SpawnBuild();
+		FName SlotName = FName(CraftingSlotUI->CraftSlotName->GetText().ToString());
+		BuildComp->SpawnBuild(SlotName);
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBuild"));
 	}
 

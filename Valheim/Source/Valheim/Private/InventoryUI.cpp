@@ -58,3 +58,4 @@ void UInventoryUI::UpdateInventory(UAC_InventoryComponent* IC)
 		}
 	}
 }
+

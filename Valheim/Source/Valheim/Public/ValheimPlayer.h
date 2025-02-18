@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryUI.h"
 #include "CraftingUI.h"
+#include "CraftingSlotUI.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputAction.h"
 
 class UAC_BuildComponent;
@@ -136,6 +137,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = CraftingSystem)
 	class UAC_CraftingComponent* CraftingComp;
+
+	UPROPERTY(EditAnywhere, Category = CraftingSystem)
+	class UCraftingSlotUI* CraftingSlotUI;
 
 // Inventory System
 public:

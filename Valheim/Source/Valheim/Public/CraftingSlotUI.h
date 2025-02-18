@@ -12,6 +12,10 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "AC_BuildComponent.h"
+
+class UAC_CraftingComponent;
+class UCraftingUI;
 
 #include "CraftingSlotUI.generated.h"
 
@@ -50,7 +54,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget), meta = (ExposeOnSpawn = "true"))
 	FCraftableStruct CraftItem;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
+	class UAC_CraftingComponent* CraftComp;
+
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
+	class UAC_BuildComponent* BuildComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
+	class UCraftingUI* CraftUI;
 
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
+	void OnCraftItemButtonClicked();
+	void BuildMode();
 };
