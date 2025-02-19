@@ -30,6 +30,7 @@ void UCraftingUI::LoadCraftInventory(UAC_CraftingComponent* CC)
 			if (CSlotUI)
 			{
 				CSlotUI->CraftComp = CC;
+				CSlotUI->CraftUI = this;
 				CSlotUI->CraftItem = CraftItemData;
 				CraftingItemContainer->AddChild(CSlotUI);
 				CSlotUI->AddToViewport();

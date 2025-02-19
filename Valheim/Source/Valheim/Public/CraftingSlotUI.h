@@ -64,6 +64,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
 	class UCraftingUI* CraftUI;
 
+	UPROPERTY()
+	class AValheimPlayer* PlayerCharacter;
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()

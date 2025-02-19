@@ -58,9 +58,9 @@ void UCraftingSlotUI::OnCraftItemButtonClicked()
 				FInputModeGameOnly GameInputMode;
 				PlayerController->SetInputMode(GameInputMode);
 				PlayerController->bShowMouseCursor = false;
-				PlayerCharacter->IsCraftModeOn = false;
 
 				BuildComp->LaunchBuildMode(SlotName);
+		
 			}
 			else
 			{

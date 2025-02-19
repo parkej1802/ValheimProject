@@ -141,6 +141,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = CraftingSystem)
 	class UCraftingSlotUI* CraftingSlotUI;
 
+	FName PreviousSlotName;
+
 // Inventory System
 public:
 	UPROPERTY(EditAnywhere, Category = InventorySystem)

@@ -63,9 +63,9 @@ void UAC_BuildComponent::BuildDelay(FName BuildingName)
 	if (IsBuildMode)
 	{
 		FTimerHandle TH_DelayManager;
-		GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, FTimerDelegate::CreateLambda([this, BuildingName]() {
+		/*GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, FTimerDelegate::CreateLambda([this, BuildingName]() {
 			this->BuildCycle(BuildingName);
-			}), 0.01f, false);
+			}), 0.01f, false);*/
 	}
 	else {
 		//StopBuildMode();
@@ -105,7 +105,7 @@ void UAC_BuildComponent::SpawnBuildGhost(FName BuildingName)
 
 void UAC_BuildComponent::BuildCycle(FName BuildingName)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Buil Cycle!"));
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Buil Cycle!"));
 
 	FVector CameraLocation = CameraBS->GetComponentLocation();
 	FVector CameraForwardVector = CameraBS->GetForwardVector();
@@ -208,11 +208,11 @@ void UAC_BuildComponent::LaunchBuildMode(FName BuildingName)
 {
 	if (IsBuildMode)
 	{
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode True"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode True"));
 		StopBuildMode();
 	}
 	else {
-		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode false"));
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode false"));
 		IsBuildMode = true;
 		SpawnBuildGhost(BuildingName);
 		BuildCycle(BuildingName);

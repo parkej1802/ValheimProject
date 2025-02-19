@@ -85,6 +85,8 @@ public:
 
 	UPrimitiveComponent* HitComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
+	class UAC_CraftingComponent* CraftComp;
 
 // Build Functions
 public:
@@ -100,7 +102,7 @@ public:
 	void DestroyBuild();
 	void RotateRight();
 	void RotateLeft();
-
+	void IsIngredientsEnough(FName BuildingName);
 	bool LocalFound = false;
 	FBuildDetectResult DetectBuildBox();
 };
