@@ -28,6 +28,7 @@ void UAC_CraftingComponent::BeginPlay()
 		FString DataTablePath = TEXT("/Script/Engine.DataTable'/Game/UP/CraftingSystem/CraftableDB.CraftableDB'");
 		CraftableDB = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *DataTablePath));
 		InitCalculateCrafting();
+		
 	}
 
 	

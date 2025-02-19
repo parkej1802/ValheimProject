@@ -4,6 +4,8 @@
 #include "AC_BuildComponent.h"
 #include "ValheimPlayer.h"
 #include "CollisionQueryParams.h"
+#include "AC_CraftingComponent.h"
+#include "AC_InventoryComponent.h"
 
 
 // Sets default values for this component's properties
@@ -63,9 +65,9 @@ void UAC_BuildComponent::BuildDelay(FName BuildingName)
 	if (IsBuildMode)
 	{
 		FTimerHandle TH_DelayManager;
-		/*GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, FTimerDelegate::CreateLambda([this, BuildingName]() {
+		GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, FTimerDelegate::CreateLambda([this, BuildingName]() {
 			this->BuildCycle(BuildingName);
-			}), 0.01f, false);*/
+			}), 0.01f, false);
 	}
 	else {
 		//StopBuildMode();
@@ -105,7 +107,7 @@ void UAC_BuildComponent::SpawnBuildGhost(FName BuildingName)
 
 void UAC_BuildComponent::BuildCycle(FName BuildingName)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Buil Cycle!"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Buil Cycle!"));
 
 	FVector CameraLocation = CameraBS->GetComponentLocation();
 	FVector CameraForwardVector = CameraBS->GetForwardVector();
@@ -208,11 +210,11 @@ void UAC_BuildComponent::LaunchBuildMode(FName BuildingName)
 {
 	if (IsBuildMode)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode True"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode True"));
 		StopBuildMode();
 	}
 	else {
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode false"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode false"));
 		IsBuildMode = true;
 		SpawnBuildGhost(BuildingName);
 		BuildCycle(BuildingName);
@@ -309,9 +311,35 @@ void UAC_BuildComponent::RotateLeft()
 	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Rotating RIght!"));
 }
 
-void UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
+bool UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
 {
-	//FCraftableStruct* CraftItem = CraftComp->CraftableDataMap[BuildingName];
+	FCraftableStruct* CraftItem = CraftComp->CraftableDataMap.Find(BuildingName);
+
+	for (TPair<TSubclassOf<AItem>, int32>& Ingredient : CraftItem->Ingredients)
+	{
+		TSubclassOf<AItem> RequiredItem = Ingredient.Key;
+		int32 RequiredAmount = Ingredient.Value;
+
+		bool bHasEnough = false;
+
+		for (FInventoryStruct& InventoryItem : InventoryComp->ItemsInInventory)
+		{
+			if (InventoryItem.ItemClass == RequiredItem && InventoryItem.Quantity >= RequiredAmount)
+			{
+				bHasEnough = true;
+				break;
+			}
+		}
+
+		if (!bHasEnough)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
+				FString::Printf(TEXT("Not enough materials for %s"), *RequiredItem->GetName()));
+			return false;
+		}
+	}
+
+	return true;
 }
 
 FBuildDetectResult UAC_BuildComponent::DetectBuildBox()

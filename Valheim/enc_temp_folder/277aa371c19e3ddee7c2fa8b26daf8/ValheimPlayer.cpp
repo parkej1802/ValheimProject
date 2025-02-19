@@ -75,7 +75,8 @@ void AValheimPlayer::BeginPlay()
 
 	BuildComp->SetCameraBS(tpsCamComp);
 	InventoryComp->ConnectedActor = this;
-	CraftingSlotUI->BuildComp = BuildComp;
+	BuildComp->CraftComp = CraftingComp;
+	BuildComp->InventoryComp = InventoryComp;
 }
 
 // Called every frame
@@ -283,11 +284,11 @@ void AValheimPlayer::CraftModeOn()
 			CraftUI->LoadCraftInventory(CraftingComp);
 		}
 		IsCraftModeOn = true;
+		BuildComp->StopBuildMode();
 
 		FInputModeGameAndUI UIInputMode;
 		pc->SetInputMode(UIInputMode);
 		pc->bShowMouseCursor = true;
-	
 	}
 }
 
@@ -304,7 +305,6 @@ void AValheimPlayer::InventoryModeOn()
 			InventoryUI->RemoveFromParent();
 		}
 		IsInventoryModeOn = false;
-
 		FInputModeGameOnly GameInputMode;
 		pc->SetInputMode(GameInputMode);
 		pc->bShowMouseCursor = false;

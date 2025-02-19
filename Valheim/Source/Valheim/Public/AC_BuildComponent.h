@@ -10,6 +10,8 @@
 #include "BuildInterface.h"
 
 class AValheimPlayer;
+class UAC_CraftingComponent;
+class UAC_InventoryComponent;
 
 #include "AC_BuildComponent.generated.h"
 
@@ -86,7 +88,10 @@ public:
 	UPrimitiveComponent* HitComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
-	class UAC_CraftingComponent* CraftComp;
+	UAC_CraftingComponent* CraftComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
+	UAC_InventoryComponent* InventoryComp;
 
 // Build Functions
 public:
@@ -102,7 +107,7 @@ public:
 	void DestroyBuild();
 	void RotateRight();
 	void RotateLeft();
-	void IsIngredientsEnough(FName BuildingName);
+	bool IsIngredientsEnough(FName BuildingName);
 	bool LocalFound = false;
 	FBuildDetectResult DetectBuildBox();
 };

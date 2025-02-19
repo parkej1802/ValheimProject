@@ -4,6 +4,8 @@
 #include "AC_BuildComponent.h"
 #include "ValheimPlayer.h"
 #include "CollisionQueryParams.h"
+#include "AC_CraftingComponent.h"
+#include "AC_InventoryComponent.h"
 
 
 // Sets default values for this component's properties
@@ -309,9 +311,48 @@ void UAC_BuildComponent::RotateLeft()
 	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Rotating RIght!"));
 }
 
-void UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
+bool UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
 {
-	//FCraftableStruct* CraftItem = CraftComp->CraftableDataMap[BuildingName];
+	FCraftableStruct* CraftItem = CraftComp->CraftableDataMap.Find(BuildingName);
+
+	for (TPair<TSubclassOf<AItem>, int32>& Ingredient : CraftItem->Ingredients)
+	{
+		TSubclassOf<AItem> RequiredItem = Ingredient.Key;
+		int32 RequiredAmount = Ingredient.Value;
+
+		bool bHasEnough = false;
+
+		for (FInventoryStruct& InventoryItem : InventoryComp->ItemsInInventory)
+		{
+			if (InventoryItem.ItemClass == RequiredItem && InventoryItem.Quantity >= RequiredAmount)
+			{
+				bHasEnough = true;
+				break;
+			}
+		}
+
+		if (!bHasEnough)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
+				FString::Printf(TEXT("Not enough materials for %s"), *RequiredItem->GetName()));
+			return false;
+		}
+	}
+
+	for (TPair<TSubclassOf<AItem>, int32>& Ingredient : CraftItem->Ingredients) {
+		TSubclassOf<AItem> RequiredItem = Ingredient.Key;
+		int32 RequiredAmount = Ingredient.Value;
+
+		for (FInventoryStruct& InventoryItem : InventoryComp->ItemsInInventory)
+		{
+			if (InventoryItem.ItemClass == RequiredItem && InventoryItem.Quantity >= RequiredAmount)
+			{
+				InventoryItem.Quantity -= RequiredAmount;
+			}
+		}
+	}
+
+	return true;
 }
 
 FBuildDetectResult UAC_BuildComponent::DetectBuildBox()

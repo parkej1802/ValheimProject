@@ -75,7 +75,8 @@ void AValheimPlayer::BeginPlay()
 
 	BuildComp->SetCameraBS(tpsCamComp);
 	InventoryComp->ConnectedActor = this;
-	CraftingSlotUI->BuildComp = BuildComp;
+	BuildComp->CraftComp = CraftingComp;
+	BuildComp->InventoryComp = InventoryComp;
 }
 
 // Called every frame
@@ -228,8 +229,9 @@ void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
 			if (SlotName != PreviousSlotName) {
 				PreviousSlotName = SlotName;
 			}
-
-			BuildComp->SpawnBuild(PreviousSlotName);
+			if (BuildComp->IsIngredientsEnough(PreviousSlotName)) {
+				BuildComp->SpawnBuild(PreviousSlotName);
+			}
 		}
 		
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBuild"));
