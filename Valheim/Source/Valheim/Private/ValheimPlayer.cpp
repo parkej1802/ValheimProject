@@ -229,9 +229,12 @@ void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
 			if (SlotName != PreviousSlotName) {
 				PreviousSlotName = SlotName;
 			}
+
 			if (BuildComp->IsIngredientsEnough(PreviousSlotName)) {
+
 				BuildComp->SpawnBuild(PreviousSlotName);
 			}
+
 		}
 		
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBuild"));

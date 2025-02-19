@@ -76,7 +76,7 @@ void UAC_BuildComponent::BuildDelay(FName BuildingName)
 
 void UAC_BuildComponent::SpawnBuildGhost(FName BuildingName)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SpawnBuildGhost"));
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SpawnBuildGhost"));
 	if (PlayerCharacter)
 	{
 		UStaticMeshComponent* NewBuildGhost = Cast<UStaticMeshComponent>(
@@ -327,6 +327,7 @@ bool UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
 			if (InventoryItem.ItemClass == RequiredItem && InventoryItem.Quantity >= RequiredAmount)
 			{
 				bHasEnough = true;
+
 				break;
 			}
 		}
@@ -348,6 +349,9 @@ bool UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
 			if (InventoryItem.ItemClass == RequiredItem && InventoryItem.Quantity >= RequiredAmount)
 			{
 				InventoryItem.Quantity -= RequiredAmount;
+				if (InventoryItem.Quantity == 0) {
+					InventoryItem = FInventoryStruct();
+				}
 			}
 		}
 	}

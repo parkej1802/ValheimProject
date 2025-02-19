@@ -16,6 +16,10 @@ void UInventoryUI::LoadInventory(UAC_InventoryComponent* IC)
     for (int32 i = 0; i < IC->ItemsInInventory.Num(); i++) {
         FInventoryStruct Item = IC->ItemsInInventory[i];
 
+		if (Item.Quantity == 0) {
+			IC->ItemsInInventory[i] = FInventoryStruct();
+		}
+
 		if (InventorySlotWidget)
 		{
 			InventorySlotUI = CreateWidget<UInventorySlot>(GetWorld(), InventorySlotWidget);

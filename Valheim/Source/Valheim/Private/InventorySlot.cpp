@@ -28,7 +28,9 @@ void UInventorySlot::NativeConstruct()
 
 void UInventorySlot::OnItemButtonClicked()
 {
+
 	APlayerController* PlayerController = GetOwningPlayer();
+
 	if (PlayerController)
 	{
 		APawn* PlayerPawn = PlayerController->GetPawn();
@@ -48,20 +50,27 @@ void UInventorySlot::OnItemButtonClicked()
 					// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Item Spawn in inventorySlot!"));
 					SpawnedItem->SetItemData(Item);
 				}
+
+				if (InventoryComp->ConnectedActor->InventoryUI)
+				{
+					// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Update Inventory UI"));
+					InventoryComp->ConnectedActor->InventoryUI->UpdateInventory(InventoryComp);
+				}
 			}
-			if (InventoryWidget)
-			{
-				InventoryUI = CreateWidget<UInventoryUI>(GetWorld(), InventoryWidget);
-				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("InventoryWidget in inventorySlot"));
-			}
-			if (InventoryUI)
-			{
-				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("InventoryUI in inventorySlot"));
-				//PlayerPawn->InventoryUI->RemoveFromParent();
-				InventoryUI->LoadInventory(InventoryComp);
-				//InventoryUI->AddToViewport();
-				
-			}
+			//if (InventoryWidget)
+			//{
+			//	InventoryUI = CreateWidget<UInventoryUI>(GetWorld(), InventoryWidget);
+			//	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("InventoryWidget in inventorySlot"));
+			//}
+			//if (InventoryUI)
+			//{
+			//	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("InventoryUI in inventorySlot"));
+			//	//PlayerPawn->InventoryUI->RemoveFromParent();
+			//	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Load Inventory going Later"));
+			//	InventoryUI->UpdateInventory(InventoryComp);
+			//	//this->AddToViewport();
+			//	
+			//}
 		}
 	}
 }	

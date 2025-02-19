@@ -339,6 +339,19 @@ bool UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
 		}
 	}
 
+	for (TPair<TSubclassOf<AItem>, int32>& Ingredient : CraftItem->Ingredients) {
+		TSubclassOf<AItem> RequiredItem = Ingredient.Key;
+		int32 RequiredAmount = Ingredient.Value;
+
+		for (FInventoryStruct& InventoryItem : InventoryComp->ItemsInInventory)
+		{
+			if (InventoryItem.ItemClass == RequiredItem && InventoryItem.Quantity >= RequiredAmount)
+			{
+				InventoryItem.Quantity -= RequiredAmount;
+			}
+		}
+	}
+
 	return true;
 }
 

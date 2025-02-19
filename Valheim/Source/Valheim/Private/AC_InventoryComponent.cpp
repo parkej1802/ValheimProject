@@ -119,6 +119,7 @@ void UAC_InventoryComponent::PickUpItem()
 						ItemsInInventory[i].Stackable = NearItem->Item.Stackable;
 						ItemsInInventory[i].Thumbnail = NearItem->Item.Thumbnail;
 						ItemsInInventory[i].Mesh = NearItem->Item.Mesh;
+						//ItemsInInventory[i].ItemClass = NearItem->GetClass();
 						bItemAdded = true;
 						NearItem->Destroy();
 						break;
