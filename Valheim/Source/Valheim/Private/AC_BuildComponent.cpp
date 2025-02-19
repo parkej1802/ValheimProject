@@ -58,12 +58,14 @@ void UAC_BuildComponent::SetBuildTransform(FTransform* BT)
 	BuildTransform = *BT;
 }
 
-void UAC_BuildComponent::BuildDelay()
+void UAC_BuildComponent::BuildDelay(FName BuildingName)
 {
 	if (IsBuildMode)
 	{
 		FTimerHandle TH_DelayManager;
-		//GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, this, &UAC_BuildComponent::BuildCycle, 0.01f, false);
+		GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, FTimerDelegate::CreateLambda([this, BuildingName]() {
+			this->BuildCycle(BuildingName);
+			}), 0.01f, false);
 	}
 	else {
 		//StopBuildMode();

@@ -88,7 +88,7 @@ public:
 
 // Build Functions
 public:
-	void BuildDelay();
+	void BuildDelay(FName BuildingName);
 	void SpawnBuildGhost(FName BuildingName);
 	void BuildCycle(FName BuildingName);
 	void GiveBuildColor(bool isGreen);
