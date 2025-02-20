@@ -19,20 +19,27 @@ ABuild_WindowDoor::ABuild_WindowDoor()
 
 	BoxComp3 = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp3"));
 	BoxComp3->SetupAttachment(RootComponent);
-	BoxComp3->SetRelativeLocation(FVector(10.0f, 200.0f, 400.0f));
+	BoxComp3->SetRelativeLocation(FVector(0.0f, 200.0f, 400.0f));
 	BoxComp3->SetBoxExtent(FVector(200.0f, 200.0f, 10.0f));
-	BoxComp3->SetCollisionProfileName(TEXT("Floorrace"));
+	BoxComp3->SetCollisionProfileName(TEXT("FloorTace"));
 
 	BoxComp4 = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp4"));
 	BoxComp4->SetupAttachment(RootComponent);
-	BoxComp4->SetRelativeLocation(FVector(10.0f, -200.0f, 400.0f));
+	BoxComp4->SetRelativeLocation(FVector(0.0f, -200.0f, 400.0f));
 	BoxComp4->SetBoxExtent(FVector(200.0f, 200.0f, 10.0f));
 	BoxComp4->SetCollisionProfileName(TEXT("FloorTrace"));
+
+	WindowBoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("WindowBoxComp"));
+	WindowBoxComp->SetupAttachment(RootComponent);
+	WindowBoxComp->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 131.0f), FRotator(0.0f, 90.0f, 0.0f));
+	WindowBoxComp->SetBoxExtent(FVector(0.0f, 100.0f, 135.0f));
+	WindowBoxComp->SetCollisionProfileName(TEXT("WindowTrace"));
 
 	BoxCompArray.Push(BoxComp1);
 	BoxCompArray.Push(BoxComp2);
 	BoxCompArray.Push(BoxComp3);
 	BoxCompArray.Push(BoxComp4);
+	BoxCompArray.Push(WindowBoxComp);
 
 	SetBuildWindowWall();
 }

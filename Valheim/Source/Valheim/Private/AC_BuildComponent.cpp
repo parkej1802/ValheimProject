@@ -4,6 +4,8 @@
 #include "AC_BuildComponent.h"
 #include "ValheimPlayer.h"
 #include "CollisionQueryParams.h"
+#include "AC_CraftingComponent.h"
+#include "AC_InventoryComponent.h"
 
 
 // Sets default values for this component's properties
@@ -28,7 +30,7 @@ void UAC_BuildComponent::BeginPlay()
 	{
 		PlayerCharacter = Cast<AValheimPlayer>(Owner);
 		if (PlayerCharacter) {
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerCharacter!"));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("PlayerCharacter!"));
 		}
 		
 		FString DataTablePath = TEXT("/Game/UP/BuildingMaterial/Buildable/S_BuildableDB.S_BuildableDB");
@@ -58,20 +60,23 @@ void UAC_BuildComponent::SetBuildTransform(FTransform* BT)
 	BuildTransform = *BT;
 }
 
-void UAC_BuildComponent::BuildDelay()
+void UAC_BuildComponent::BuildDelay(FName BuildingName)
 {
 	if (IsBuildMode)
 	{
 		FTimerHandle TH_DelayManager;
-		GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, this, &UAC_BuildComponent::BuildCycle, 0.01f, false);
+		GetWorld()->GetTimerManager().SetTimer(TH_DelayManager, FTimerDelegate::CreateLambda([this, BuildingName]() {
+			this->BuildCycle(BuildingName);
+			}), 0.01f, false);
 	}
 	else {
 		//StopBuildMode();
 	}
 }
 
-void UAC_BuildComponent::SpawnBuildGhost()
+void UAC_BuildComponent::SpawnBuildGhost(FName BuildingName)
 {
+	// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("SpawnBuildGhost"));
 	if (PlayerCharacter)
 	{
 		UStaticMeshComponent* NewBuildGhost = Cast<UStaticMeshComponent>(
@@ -81,7 +86,7 @@ void UAC_BuildComponent::SpawnBuildGhost()
 		{
 			BuildGhost = NewBuildGhost;
 
-			FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
+			FBuildingStruct& BuildingData = BuildableDataMap[BuildingName];
 
 			UStaticMesh* MeshAsset = BuildingData.Mesh;
 
@@ -100,8 +105,10 @@ void UAC_BuildComponent::SpawnBuildGhost()
 	}
 }
 
-void UAC_BuildComponent::BuildCycle()
+void UAC_BuildComponent::BuildCycle(FName BuildingName)
 {
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Buil Cycle!"));
+
 	FVector CameraLocation = CameraBS->GetComponentLocation();
 	FVector CameraForwardVector = CameraBS->GetForwardVector();
 	
@@ -118,7 +125,7 @@ void UAC_BuildComponent::BuildCycle()
 		CollisionParams.AddIgnoredActor(OwnerActor);
 	}
 
-	FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
+	FBuildingStruct& BuildingData = BuildableDataMap[BuildingName];
 
 	TEnumAsByte<ETraceTypeQuery> TraceInfo = BuildingData.TraceType;
 
@@ -135,8 +142,6 @@ void UAC_BuildComponent::BuildCycle()
 		FTransform SetTransform = FTransform(Rotation, ImpactLocation, Scale);
 		HitActor = HitResult.GetActor();
 		HitComponent = HitResult.GetComponent();
-
-
 
 		/*
 		if (HitComponent)
@@ -173,7 +178,7 @@ void UAC_BuildComponent::BuildCycle()
 		}
 	}
 
-	BuildDelay();
+	BuildDelay(BuildingName);
 }
 
 void UAC_BuildComponent::GiveBuildColor(bool isGreen)
@@ -201,16 +206,18 @@ void UAC_BuildComponent::GiveBuildColor(bool isGreen)
 	BuildGhost->SetWorldTransform(BuildTransform);
 }
 
-void UAC_BuildComponent::LaunchBuildMode()
+void UAC_BuildComponent::LaunchBuildMode(FName BuildingName)
 {
 	if (IsBuildMode)
 	{
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode True"));
 		StopBuildMode();
 	}
 	else {
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("IsBuildMode false"));
 		IsBuildMode = true;
-		SpawnBuildGhost();
-		BuildCycle();
+		SpawnBuildGhost(BuildingName);
+		BuildCycle(BuildingName);
 	}
 }
 
@@ -229,7 +236,7 @@ void UAC_BuildComponent::GetDataTableRowNames()
 {
 	if (BuildableDB)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildableDB is valid!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildableDB is valid!"));
 		TArray<FName> RowNames = BuildableDB->GetRowNames();
 
 		for (FName& RowName : RowNames)
@@ -238,6 +245,7 @@ void UAC_BuildComponent::GetDataTableRowNames()
 			if (RowData)
 			{
 				BuildableDataArray.Add(*RowData);
+				BuildableDataMap.Add(RowName, *RowData);
 				
 			}
 		}
@@ -258,9 +266,10 @@ void UAC_BuildComponent::ChangeMesh()
 	}
 }
 
-void UAC_BuildComponent::SpawnBuild()
+void UAC_BuildComponent::SpawnBuild(FName BuildingName)
 {
-	FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
+	//FBuildingStruct& BuildingData = BuildableDataArray[BuildID];
+	FBuildingStruct& BuildingData = BuildableDataMap[BuildingName];
 
 	TSubclassOf<AActor> BuildingActor = BuildingData.Actor;
 
@@ -280,6 +289,74 @@ void UAC_BuildComponent::DestroyBuild()
 			HitActor = nullptr;
 		}
 	}
+}
+
+void UAC_BuildComponent::RotateRight()
+{
+	FQuat NewRotation = FQuat(FRotator(0.0f, 90.0f * GetWorld()->GetDeltaSeconds(), 0.0f));
+
+	BuildTransform.SetRotation(BuildTransform.GetRotation() * NewRotation);
+
+	BuildGhost->SetWorldTransform(BuildTransform);
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Rotating RIght!"));
+
+}
+
+void UAC_BuildComponent::RotateLeft()
+{
+	FQuat NewRotation = FQuat(FRotator(0.0f, -90.0f * GetWorld()->GetDeltaSeconds(), 0.0f));
+
+	BuildTransform.SetRotation(BuildTransform.GetRotation() * NewRotation);
+	BuildGhost->SetWorldTransform(BuildTransform);
+	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Rotating RIght!"));
+}
+
+bool UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
+{
+	FCraftableStruct* CraftItem = CraftComp->CraftableDataMap.Find(BuildingName);
+
+	for (TPair<TSubclassOf<AItem>, int32>& Ingredient : CraftItem->Ingredients)
+	{
+		TSubclassOf<AItem> RequiredItem = Ingredient.Key;
+		int32 RequiredAmount = Ingredient.Value;
+
+		bool bHasEnough = false;
+
+		for (FInventoryStruct& InventoryItem : InventoryComp->ItemsInInventory)
+		{
+			if (InventoryItem.ItemClass == RequiredItem && InventoryItem.Quantity >= RequiredAmount)
+			{
+				bHasEnough = true;
+
+				break;
+			}
+		}
+
+		if (!bHasEnough)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
+				FString::Printf(TEXT("Not enough materials for %s"), *RequiredItem->GetName()));
+			return false;
+		}
+	}
+
+	for (TPair<TSubclassOf<AItem>, int32>& Ingredient : CraftItem->Ingredients) {
+		TSubclassOf<AItem> RequiredItem = Ingredient.Key;
+		int32 RequiredAmount = Ingredient.Value;
+
+		for (FInventoryStruct& InventoryItem : InventoryComp->ItemsInInventory)
+		{
+			if (InventoryItem.ItemClass == RequiredItem && InventoryItem.Quantity >= RequiredAmount)
+			{
+				InventoryItem.Quantity -= RequiredAmount;
+				if (InventoryItem.Quantity == 0) {
+					InventoryItem = FInventoryStruct();
+				}
+			}
+		}
+	}
+
+	return true;
 }
 
 FBuildDetectResult UAC_BuildComponent::DetectBuildBox()

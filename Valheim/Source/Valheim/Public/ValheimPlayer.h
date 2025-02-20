@@ -6,10 +6,13 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryUI.h"
 #include "CraftingUI.h"
+#include "CraftingSlotUI.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputAction.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 class UAC_BuildComponent;
 class UAC_InventoryComponent;
+class UAC_CraftingComponent;
 
 #include "ValheimPlayer.generated.h"
 
@@ -67,7 +70,7 @@ public:
 	void InputJump(const FInputActionValue& inputValue);
 
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float WalkSpeed = 600.0f;
+	float WalkSpeed = 500.0f;
 
 	FVector Direction;
 
@@ -110,6 +113,15 @@ public:
 	void LeftMouseButton(const FInputActionValue& inputValue);
 	void RightMouseButton(const FInputActionValue& inputValue);
 
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_RotateRightR;
+
+	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
+	class UInputAction* IA_RotateLeftQ;
+
+	void RotateRightR(const FInputActionValue& inputValue);
+	void RotateLeftQ(const FInputActionValue& inputValue);
+
 
 // Crafting System
 public:
@@ -123,6 +135,14 @@ public:
 	bool IsCraftModeOn = false;
 
 	class UCraftingUI* CraftUI;
+
+	UPROPERTY(EditAnywhere, Category = CraftingSystem)
+	class UAC_CraftingComponent* CraftingComp;
+
+	UPROPERTY(EditAnywhere, Category = CraftingSystem)
+	class UCraftingSlotUI* CraftingSlotUI;
+
+	FName PreviousSlotName;
 
 // Inventory System
 public:
@@ -148,10 +168,9 @@ public:
 protected:
 	// 달리기
 	void SprintStart(const FInputActionValue& inputValue);
-	void SprintEnd(const FInputActionValue& inputValue);
 
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float SprintSpeed = 900.0f;
+	float SprintSpeed = 1000.0f;
 
 
 	// 구르기

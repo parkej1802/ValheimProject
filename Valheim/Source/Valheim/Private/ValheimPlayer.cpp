@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 
 #include "AC_InventoryComponent.h"
+#include "AC_CraftingComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
@@ -51,7 +52,8 @@ AValheimPlayer::AValheimPlayer()
 	// InventorySystem
 	InventoryComp = CreateDefaultSubobject<UAC_InventoryComponent>(TEXT("InventoryComp"));
 	
-
+	// CraftingSystem
+	CraftingComp = CreateDefaultSubobject<UAC_CraftingComponent>(TEXT("CraftingComp"));
 }
 
 // Called when the game starts or when spawned
@@ -71,8 +73,12 @@ void AValheimPlayer::BeginPlay()
 		}
 	}
 
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
 	BuildComp->SetCameraBS(tpsCamComp);
 	InventoryComp->ConnectedActor = this;
+	BuildComp->CraftComp = CraftingComp;
+	BuildComp->InventoryComp = InventoryComp;
 }
 
 // Called every frame
@@ -104,13 +110,16 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		PlayerInput->BindAction(IA_WheelDown, ETriggerEvent::Started, this, &AValheimPlayer::WheelDown);
 		PlayerInput->BindAction(IA_LeftMouseButton, ETriggerEvent::Started, this, &AValheimPlayer::LeftMouseButton);
 		PlayerInput->BindAction(IA_RightMouseButton, ETriggerEvent::Started, this, &AValheimPlayer::RightMouseButton);
+		PlayerInput->BindAction(IA_RotateRightR, ETriggerEvent::Triggered, this, &AValheimPlayer::RotateRightR);
+		PlayerInput->BindAction(IA_RotateLeftQ, ETriggerEvent::Triggered, this, &AValheimPlayer::RotateLeftQ);
 
 		PlayerInput->BindAction(IA_CraftMode, ETriggerEvent::Started, this, &AValheimPlayer::CraftModeOn);
 		PlayerInput->BindAction(IA_InventoryMode, ETriggerEvent::Started, this, &AValheimPlayer::InventoryModeOn);
 		PlayerInput->BindAction(IA_PickUp, ETriggerEvent::Started, this, &AValheimPlayer::PickUp);
 
 		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AValheimPlayer::SprintStart);
-		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintEnd);
+		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintStart);
+
 		PlayerInput->BindAction(IA_Roll, ETriggerEvent::Started, this, &AValheimPlayer::Roll);
 		
 
@@ -146,14 +155,16 @@ void AValheimPlayer::Move(const FInputActionValue& inputValue)
 
 void AValheimPlayer::SprintStart(const FInputActionValue& inputValue)
 {
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Sprint"));
-}
-
-void AValheimPlayer::SprintEnd(const FInputActionValue& inputValue)
-{
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SprintEnd"));
+	
+	auto Movement = GetCharacterMovement();
+	if (!Movement) return;
+	
+	if (Movement->MaxWalkSpeed > WalkSpeed) {
+		Movement->MaxWalkSpeed = WalkSpeed;
+	}
+	else {
+		Movement->MaxWalkSpeed = SprintSpeed;
+	}
 }
 
 void AValheimPlayer::Roll(const FInputActionValue& inputValue)
@@ -172,7 +183,7 @@ void AValheimPlayer::BuildModeOn()
 	{
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("BuildModeOn"));
 	}
-	BuildComp->LaunchBuildMode();
+	//BuildComp->LaunchBuildMode();
 }
 
 void AValheimPlayer::DestroyComponent(UActorComponent* BC)
@@ -216,7 +227,21 @@ void AValheimPlayer::WheelDown(const FInputActionValue& inputValue)
 void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
 {
 	if (BuildComp->IsBuildMode && BuildComp->CanBuild) {
-		BuildComp->SpawnBuild();
+
+		if (CraftingSlotUI) {
+			FName SlotName = FName(CraftingSlotUI->CraftSlotName->GetText().ToString());
+
+			if (SlotName != PreviousSlotName) {
+				PreviousSlotName = SlotName;
+			}
+
+			if (BuildComp->IsIngredientsEnough(PreviousSlotName)) {
+
+				BuildComp->SpawnBuild(PreviousSlotName);
+			}
+
+		}
+		
 		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SpawnBuild"));
 	}
 
@@ -229,6 +254,20 @@ void AValheimPlayer::RightMouseButton(const FInputActionValue& inputValue)
 {
 	if (BuildComp->IsBuildMode) {
 		BuildComp->DestroyBuild();
+	}
+}
+
+void AValheimPlayer::RotateRightR(const FInputActionValue& inputValue)
+{
+	if (BuildComp->IsBuildMode) {
+		BuildComp->RotateRight();
+	}
+}
+
+void AValheimPlayer::RotateLeftQ(const FInputActionValue& inputValue)
+{
+	if (BuildComp->IsBuildMode) {
+		BuildComp->RotateLeft();
 	}
 }
 
@@ -251,13 +290,14 @@ void AValheimPlayer::CraftModeOn()
 		if (CraftUI)
 		{
 			CraftUI->AddToViewport();
+			CraftUI->LoadCraftInventory(CraftingComp);
 		}
 		IsCraftModeOn = true;
+		BuildComp->StopBuildMode();
 
 		FInputModeGameAndUI UIInputMode;
 		pc->SetInputMode(UIInputMode);
 		pc->bShowMouseCursor = true;
-	
 	}
 }
 
@@ -274,7 +314,6 @@ void AValheimPlayer::InventoryModeOn()
 			InventoryUI->RemoveFromParent();
 		}
 		IsInventoryModeOn = false;
-
 		FInputModeGameOnly GameInputMode;
 		pc->SetInputMode(GameInputMode);
 		pc->bShowMouseCursor = false;

@@ -40,6 +40,9 @@ struct FInventoryStruct : public FTableRowBase {
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStaticMesh* Mesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSubclassOf<class AItem> ItemClass;
+
 	FInventoryStruct()
 		: Name(FText::FromString(TEXT("")))
 		, Value(0)

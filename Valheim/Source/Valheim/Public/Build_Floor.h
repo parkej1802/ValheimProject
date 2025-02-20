@@ -33,6 +33,18 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadWrite)
 	class UBoxComponent* BoxComp4;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* Wall1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* Wall2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* Wall3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* Wall4;
+
 	TArray<UBoxComponent*> BoxCompArray;
 
 	virtual TArray<UBoxComponent*> GetBoxCollision_Implementation() override;

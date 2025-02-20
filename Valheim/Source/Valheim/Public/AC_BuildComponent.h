@@ -10,6 +10,8 @@
 #include "BuildInterface.h"
 
 class AValheimPlayer;
+class UAC_CraftingComponent;
+class UAC_InventoryComponent;
 
 #include "AC_BuildComponent.generated.h"
 
@@ -76,26 +78,36 @@ public:
     TArray<FBuildingStruct> BuildableDataArray;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
+	TMap<FName, FBuildingStruct> BuildableDataMap;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
 	AActor* HitActor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
 
 	UPrimitiveComponent* HitComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
+	UAC_CraftingComponent* CraftComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Data)
+	UAC_InventoryComponent* InventoryComp;
 
 // Build Functions
 public:
-	void BuildDelay();
-	void SpawnBuildGhost();
-	void BuildCycle();
+	void BuildDelay(FName BuildingName);
+	void SpawnBuildGhost(FName BuildingName);
+	void BuildCycle(FName BuildingName);
 	void GiveBuildColor(bool isGreen);
-	void LaunchBuildMode();
+	void LaunchBuildMode(FName BuildingName);
 	void StopBuildMode();
 	void GetDataTableRowNames();
 	void ChangeMesh();
-	void SpawnBuild();
+	void SpawnBuild(FName BuildingName);
 	void DestroyBuild();
-
+	void RotateRight();
+	void RotateLeft();
+	bool IsIngredientsEnough(FName BuildingName);
 	bool LocalFound = false;
 	FBuildDetectResult DetectBuildBox();
 };
