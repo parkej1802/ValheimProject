@@ -24,4 +24,12 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ValheimPlayerAnimInstance)
 	float Direction = 0.f;
+	
+	
+	// KMS 2.20 애니메이션 몽타주 마지막에 공격다시 이동속도 리셋
+	UFUNCTION()
+	void AnimNotify_AttackEnd();
+
+	UPROPERTY()
+	class AValheimPlayer* player;
 };

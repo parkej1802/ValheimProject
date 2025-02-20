@@ -9,7 +9,7 @@ void UValheimPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	AValheimPlayer* player = Cast<AValheimPlayer>(TryGetPawnOwner());
+	player = Cast<AValheimPlayer>(TryGetPawnOwner());
 	if (!player) return;
 
 	FVector velocity = player->GetVelocity();
@@ -22,4 +22,9 @@ void UValheimPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	FVector rightVector = player->GetActorRightVector();
 	Direction = FVector::DotProduct(velocity, rightVector);
 	
+}
+
+void UValheimPlayerAnimInstance::AnimNotify_AttackEnd()
+{
+	player->GetCharacterMovement()->MaxWalkSpeed = player->WalkSpeed;
 }

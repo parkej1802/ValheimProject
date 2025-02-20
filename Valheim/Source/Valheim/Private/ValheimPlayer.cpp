@@ -61,6 +61,8 @@ void AValheimPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+
+
 	pc = Cast<APlayerController>(Controller);
 
 	if (pc)
@@ -79,6 +81,8 @@ void AValheimPlayer::BeginPlay()
 	InventoryComp->ConnectedActor = this;
 	BuildComp->CraftComp = CraftingComp;
 	BuildComp->InventoryComp = InventoryComp;
+	// 애님몽타주 구현용 애님인스턴스 KMS
+	AnimInstance = GetMesh()->GetAnimInstance();
 }
 
 // Called every frame
@@ -121,6 +125,7 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintStart);
 
 		PlayerInput->BindAction(IA_Roll, ETriggerEvent::Started, this, &AValheimPlayer::Roll);
+		PlayerInput->BindAction(IA_Attack, ETriggerEvent::Started, this, &AValheimPlayer::Attack);
 		
 
 	}
@@ -155,14 +160,15 @@ void AValheimPlayer::Move(const FInputActionValue& inputValue)
 
 void AValheimPlayer::SprintStart(const FInputActionValue& inputValue)
 {
-	
 	auto Movement = GetCharacterMovement();
 	if (!Movement) return;
 	
-	if (Movement->MaxWalkSpeed > WalkSpeed) {
+	if (Movement->MaxWalkSpeed > WalkSpeed) 
+	{
 		Movement->MaxWalkSpeed = WalkSpeed;
 	}
-	else {
+	else 
+	{
 		Movement->MaxWalkSpeed = SprintSpeed;
 	}
 }
@@ -173,8 +179,30 @@ void AValheimPlayer::Roll(const FInputActionValue& inputValue)
 
 
 	GetCharacterMovement()->MaxWalkSpeed = RollSpeed;
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	AnimInstance;
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Roll"));
+}
+
+void AValheimPlayer::Attack(const FInputActionValue& inputValue)
+{
+	
+	if (AM_PlayerAttack)
+	{
+		AnimInstance;
+		if (AnimInstance && AM_PlayerAttack)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = 0.0f; 
+			// 공격 중 이동 금지
+			AnimInstance->Montage_Play(AM_PlayerAttack);
+			
+		}
+	}
+
+}
+
+void AValheimPlayer::OnAttackEnd()
+{
+	
 }
 
 void AValheimPlayer::BuildModeOn()

@@ -13,6 +13,7 @@
 class UAC_BuildComponent;
 class UAC_InventoryComponent;
 class UAC_CraftingComponent;
+struct FInputActionValue;
 
 #include "ValheimPlayer.generated.h"
 
@@ -25,11 +26,15 @@ public:
 	// Sets default values for this character's properties
 	AValheimPlayer();
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Animation")
+	class UAnimMontage* AM_PlayerAttack;
+		
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -78,13 +83,13 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Sprint;
-	
+
 	// ±¸¸£±â
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 
 	class UInputAction* IA_Roll;
 
-// Building System
+	// Building System
 public:
 	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
 	UAC_BuildComponent* BuildComp;
@@ -123,7 +128,7 @@ public:
 	void RotateLeftQ(const FInputActionValue& inputValue);
 
 
-// Crafting System
+	// Crafting System
 public:
 	UPROPERTY(EditAnywhere, Category = CraftingSystem)
 	class UInputAction* IA_CraftMode;
@@ -144,7 +149,7 @@ public:
 
 	FName PreviousSlotName;
 
-// Inventory System
+	// Inventory System
 public:
 	UPROPERTY(EditAnywhere, Category = InventorySystem)
 	class UInputAction* IA_InventoryMode;
@@ -177,8 +182,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerSetting)
 	bool Rollcheck = false;
 	void Roll(const FInputActionValue& inputValue);
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerSetting)
 	float RollSpeed = 1800.0f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Attack;
+	void Attack(const FInputActionValue& inputValue);
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DefaultSlot")
+	bool AttackPlay = false;
+	
+	void OnAttackEnd();
+
+	UPROPERTY()
+	class UAnimInstance* AnimInstance;
+	
 };
