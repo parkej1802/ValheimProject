@@ -73,6 +73,8 @@ void AValheimPlayer::BeginPlay()
 		}
 	}
 
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+
 	BuildComp->SetCameraBS(tpsCamComp);
 	InventoryComp->ConnectedActor = this;
 	BuildComp->CraftComp = CraftingComp;
@@ -116,7 +118,8 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		PlayerInput->BindAction(IA_PickUp, ETriggerEvent::Started, this, &AValheimPlayer::PickUp);
 
 		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AValheimPlayer::SprintStart);
-		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintEnd);
+		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintStart);
+
 		PlayerInput->BindAction(IA_Roll, ETriggerEvent::Started, this, &AValheimPlayer::Roll);
 		
 
@@ -152,14 +155,16 @@ void AValheimPlayer::Move(const FInputActionValue& inputValue)
 
 void AValheimPlayer::SprintStart(const FInputActionValue& inputValue)
 {
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Sprint"));
-}
-
-void AValheimPlayer::SprintEnd(const FInputActionValue& inputValue)
-{
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("SprintEnd"));
+	
+	auto Movement = GetCharacterMovement();
+	if (!Movement) return;
+	
+	if (Movement->MaxWalkSpeed > WalkSpeed) {
+		Movement->MaxWalkSpeed = WalkSpeed;
+	}
+	else {
+		Movement->MaxWalkSpeed = SprintSpeed;
+	}
 }
 
 void AValheimPlayer::Roll(const FInputActionValue& inputValue)

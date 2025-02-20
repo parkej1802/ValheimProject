@@ -8,6 +8,7 @@
 #include "CraftingUI.h"
 #include "CraftingSlotUI.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputAction.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 class UAC_BuildComponent;
 class UAC_InventoryComponent;
@@ -69,7 +70,7 @@ public:
 	void InputJump(const FInputActionValue& inputValue);
 
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float WalkSpeed = 600.0f;
+	float WalkSpeed = 500.0f;
 
 	FVector Direction;
 
@@ -167,10 +168,9 @@ public:
 protected:
 	// 달리기
 	void SprintStart(const FInputActionValue& inputValue);
-	void SprintEnd(const FInputActionValue& inputValue);
 
 	UPROPERTY(EditAnywhere, Category = PlayerSetting)
-	float SprintSpeed = 900.0f;
+	float SprintSpeed = 1000.0f;
 
 
 	// 구르기

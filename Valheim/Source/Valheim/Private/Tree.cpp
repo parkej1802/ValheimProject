@@ -8,7 +8,16 @@ ATree::ATree()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	SceneComp = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComp"));
+	SetRootComponent(SceneComp);
 
+	BoxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComp"));
+	BoxComp->SetupAttachment(RootComponent);
+	BoxComp->SetBoxExtent(FVector(50.f));
+
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetupAttachment(RootComponent);
+	
 }
 
 // Called when the game starts or when spawned
@@ -22,6 +31,6 @@ void ATree::BeginPlay()
 void ATree::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
