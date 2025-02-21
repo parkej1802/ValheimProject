@@ -9,6 +9,8 @@
 #include "CraftingSlotUI.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputAction.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimMontage.h"
+#include "ValheimPlayerAnimInstance.h"
 
 class UAC_BuildComponent;
 class UAC_InventoryComponent;
@@ -170,22 +172,25 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
 	class UAC_InventoryComponent* InventoryComp;
 
-protected:
+// 애니메이션
+public:
 	// 달리기
 	void SprintStart(const FInputActionValue& inputValue);
 
-	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	UPROPERTY(EditAnywhere, Category = PlayerAnimation)
 	float SprintSpeed = 1000.0f;
 
 
 	// 구르기
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerSetting)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerAnimation)
 	bool Rollcheck = false;
 	void Roll(const FInputActionValue& inputValue);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerSetting)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerAnimation)
 	float RollSpeed = 1800.0f;
 
+
+	// 공격
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Attack;
 	void Attack(const FInputActionValue& inputValue);
@@ -197,5 +202,9 @@ protected:
 
 	UPROPERTY()
 	class UAnimInstance* AnimInstance;
+
+	UPROPERTY()
+	UValheimPlayerAnimInstance* anim;
 	
+	bool IsRolling = false;
 };

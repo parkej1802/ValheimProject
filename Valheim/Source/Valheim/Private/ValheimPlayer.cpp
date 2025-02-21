@@ -54,6 +54,7 @@ AValheimPlayer::AValheimPlayer()
 	
 	// CraftingSystem
 	CraftingComp = CreateDefaultSubobject<UAC_CraftingComponent>(TEXT("CraftingComp"));
+
 }
 
 // Called when the game starts or when spawned
@@ -83,6 +84,8 @@ void AValheimPlayer::BeginPlay()
 	BuildComp->InventoryComp = InventoryComp;
 	// 애님몽타주 구현용 애님인스턴스 KMS
 	AnimInstance = GetMesh()->GetAnimInstance();
+
+	anim = Cast<UValheimPlayerAnimInstance>(GetMesh()->GetAnimInstance());
 }
 
 // Called every frame
@@ -175,17 +178,16 @@ void AValheimPlayer::SprintStart(const FInputActionValue& inputValue)
 
 void AValheimPlayer::Roll(const FInputActionValue& inputValue)
 {
-	GetMesh()->GetAnimInstance();
-
-
-	GetCharacterMovement()->MaxWalkSpeed = RollSpeed;
-	AnimInstance;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Roll"));
+	if (anim) {
+		IsRolling = true;
+		//GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		anim->PlayRollAnim();
+		
+	}
 }
 
 void AValheimPlayer::Attack(const FInputActionValue& inputValue)
 {
-	
 	if (AM_PlayerAttack)
 	{
 		AnimInstance;
@@ -193,11 +195,10 @@ void AValheimPlayer::Attack(const FInputActionValue& inputValue)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = 0.0f; 
 			// 공격 중 이동 금지
-			AnimInstance->Montage_Play(AM_PlayerAttack);
+			//AnimInstance->Montage_Play(AM_PlayerAttack);
 			
 		}
 	}
-
 }
 
 void AValheimPlayer::OnAttackEnd()

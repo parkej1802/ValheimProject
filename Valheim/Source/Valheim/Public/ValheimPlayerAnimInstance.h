@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
+#include "Components/TimeLineComponent.h"
 #include "ValheimPlayerAnimInstance.generated.h"
 
 /**
@@ -14,6 +15,8 @@ class VALHEIM_API UValheimPlayerAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+	UValheimPlayerAnimInstance();
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = ValheimPlayerAnimInstance)
@@ -32,4 +35,30 @@ public:
 
 	UPROPERTY()
 	class AValheimPlayer* player;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnimation)
+	class UAnimMontage* RollAnimMontage;
+
+	// void PlayRollAnim(float DeltaSeconds);
+	void PlayRollAnim();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "TimeLine", Meta = (AllowPrivateAccess = "true"))
+	UCurveFloat* RollCurve;
+	
+	FTimeline LerpTimeline;
+
+	float RollDuration = 0.f;
+	float currentTime = 0.f;
+	bool bAnimRolling;
+	
+	FTimeline RollTimeline;
+
+	FVector RollStartLocation;
+	FVector RollDirection;
+	FVector RollTargetLocation;
+
+	void TickRoll(float Value);
+	void OnRollFinished();
+
+
 };
