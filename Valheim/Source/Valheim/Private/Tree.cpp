@@ -2,6 +2,8 @@
 
 
 #include "Tree.h"
+#include "Item.h"
+#include "Item_Material_Wood.h"
 
 // Sets default values
 ATree::ATree()
@@ -17,14 +19,13 @@ ATree::ATree()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(RootComponent);
-	
+
 }
 
 // Called when the game starts or when spawned
 void ATree::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -34,3 +35,29 @@ void ATree::Tick(float DeltaTime)
 	
 }
 
+void ATree::TakeDamage(float Damage)
+{
+	Health -= Damage;
+	if (Health <= 0)
+	{
+		//MeshComp->SetSimulatePhysics(true);
+		/*FVector ImpulseDirection = FVector(1.f, 0.f, 0.f);
+		MeshComp->AddImpulse(ImpulseDirection * 5.f, NAME_None, true);*/
+
+
+		FVector SpawnLocation = GetActorLocation();
+		FTransform SpawnTransform = GetActorTransform();
+		SpawnTransform.SetLocation(SpawnLocation);
+
+		TSubclassOf<AItem> ItemClass = AItem_Material_Wood::StaticClass();
+
+		AItem* SpawnedItem = GetWorld()->SpawnActor<AItem>(ItemClass, SpawnTransform);
+		
+		Destroy();
+	}
+}
+
+void ATree::ResetDamageState()
+{
+	HasTakenDamage = false;  
+}

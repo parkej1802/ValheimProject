@@ -31,7 +31,7 @@ public:
 	
 	// KMS 2.20 애니메이션 몽타주 마지막에 공격다시 이동속도 리셋
 	UFUNCTION()
-	void AnimNotify_AttackEnd();
+	void IsAttackEnd();
 
 	UPROPERTY()
 	class AValheimPlayer* player;
@@ -60,5 +60,14 @@ public:
 	void TickRoll(float Value);
 	void OnRollFinished();
 
+
+	// 공격
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnimation)
+	class UAnimMontage* AttackAnimMontage;
+
+	void PlayAttackAnim();
+
+	float AttackDuration = 0.f;
+	FTimerHandle AttackTimerHandle;
 
 };

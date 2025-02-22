@@ -181,23 +181,18 @@ void AValheimPlayer::Roll(const FInputActionValue& inputValue)
 	if (anim) {
 		IsRolling = true;
 		//GetCharacterMovement()->MaxWalkSpeed = 0.0f;
-		anim->PlayRollAnim();
+		//anim->PlayRollAnim();
 		
 	}
 }
 
 void AValheimPlayer::Attack(const FInputActionValue& inputValue)
 {
-	if (AM_PlayerAttack)
+	if (!BuildComp->IsBuildMode && anim && !IsAttack)
 	{
-		AnimInstance;
-		if (AnimInstance && AM_PlayerAttack)
-		{
-			GetCharacterMovement()->MaxWalkSpeed = 0.0f; 
-			// 공격 중 이동 금지
-			//AnimInstance->Montage_Play(AM_PlayerAttack);
-			
-		}
+		IsAttack = true;
+		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		anim->PlayAttackAnim();
 	}
 }
 

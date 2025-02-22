@@ -26,11 +26,7 @@ class VALHEIM_API AValheimPlayer : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	AValheimPlayer();
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Animation")
-	class UAnimMontage* AM_PlayerAttack;
-		
+	AValheimPlayer();		
 
 protected:
 	// Called when the game starts or when spawned
@@ -174,6 +170,13 @@ public:
 
 // 애니메이션
 public:
+
+	UPROPERTY()
+	class UAnimInstance* AnimInstance;
+
+	UPROPERTY()
+	UValheimPlayerAnimInstance* anim;
+
 	// 달리기
 	void SprintStart(const FInputActionValue& inputValue);
 
@@ -189,6 +192,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerAnimation)
 	float RollSpeed = 1800.0f;
 
+	bool IsRolling = false;
+
 
 	// 공격
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
@@ -200,11 +205,8 @@ public:
 	
 	void OnAttackEnd();
 
-	UPROPERTY()
-	class UAnimInstance* AnimInstance;
-
-	UPROPERTY()
-	UValheimPlayerAnimInstance* anim;
+	bool IsAttack = false;
 	
-	bool IsRolling = false;
+
+	
 };
