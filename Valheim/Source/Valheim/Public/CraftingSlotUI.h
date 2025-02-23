@@ -66,9 +66,11 @@ public:
 
 	UPROPERTY()
 	class AValheimPlayer* PlayerCharacter;
+
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
 	void OnCraftItemButtonClicked();
+
 	void BuildMode();
 };

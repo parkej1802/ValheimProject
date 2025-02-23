@@ -9,6 +9,9 @@
 #include "CraftingSlotUI.h"
 #include "../../../../Plugins/EnhancedInput/Source/EnhancedInput/Public/InputAction.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimMontage.h"
+#include "ValheimPlayerAnimInstance.h"
+#include "PlayerMainWidget.h"
 
 class UAC_BuildComponent;
 class UAC_InventoryComponent;
@@ -24,6 +27,7 @@ class VALHEIM_API AValheimPlayer : public ACharacter
 
 public:
 	// Sets default values for this character's properties
+
 	AValheimPlayer();
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Animation")
@@ -35,9 +39,6 @@ public:
 UPROPERTY(VisibleAnywhere, Category=AxeMesh)
 class UStaticMeshComponent* AxeMesh;
 
-
-
-		
 
 protected:
 	// Called when the game starts or when spawned
@@ -136,8 +137,9 @@ public:
 	void RotateRightR(const FInputActionValue& inputValue);
 	void RotateLeftQ(const FInputActionValue& inputValue);
 
+	void OpenBuilding();
 
-	// Crafting System
+// Crafting System
 public:
 	UPROPERTY(EditAnywhere, Category = CraftingSystem)
 	class UInputAction* IA_CraftMode;
@@ -158,7 +160,12 @@ public:
 
 	FName PreviousSlotName;
 
-	// Inventory System
+	bool HasEnoughMaterial = true;
+	void CheckMaterialStatus(float DeltaSecond);
+	float currentTextTime = 0.f;
+	float TextTime = 2.f;
+
+// Inventory System
 public:
 	UPROPERTY(EditAnywhere, Category = InventorySystem)
 	class UInputAction* IA_InventoryMode;
@@ -179,32 +186,104 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = BuildingSystem)
 	class UAC_InventoryComponent* InventoryComp;
 
-protected:
+// 애니메이션
+public:
+
+	UPROPERTY()
+	class UAnimInstance* AnimInstance;
+
+	UPROPERTY()
+	UValheimPlayerAnimInstance* anim;
+
 	// 달리기
 	void SprintStart(const FInputActionValue& inputValue);
+	void SprintStop(const FInputActionValue& inputValue);
 
-	UPROPERTY(EditAnywhere, Category = PlayerSetting)
+	UPROPERTY(EditAnywhere, Category = PlayerAnimation)
 	float SprintSpeed = 1000.0f;
 
 
 	// 구르기
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerSetting)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerAnimation)
 	bool Rollcheck = false;
 	void Roll(const FInputActionValue& inputValue);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerSetting)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerAnimation)
 	float RollSpeed = 1800.0f;
 
+	bool IsRolling = false;
+
+
+	// 공격
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Attack;
+
 	void Attack(const FInputActionValue& inputValue);
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DefaultSlot")
 	bool AttackPlay = false;
 	
 	void OnAttackEnd();
 
-	UPROPERTY()
-	class UAnimInstance* AnimInstance;
+	bool IsAttack = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_ComboAttack;
+
+	void ComboAttack(const FInputActionValue& inputValue);
 	
+	// 방어
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Block;
+
+	void Block(const FInputActionValue& inputValue);
+
+	bool IsBlock = false;
+
+
+// 플레이어 스탯
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 CurrentHealth = 25;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 MaxHealth = 25;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 Level = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 MaxExp = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 currentExp = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 Stamina = 50;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 MaxStamina = 50;
+
+	bool IsRunning = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	TSubclassOf<UUserWidget> PlayerWidget;
+
+	class UPlayerMainWidget* PlayerUI;
+
+	void ShowPlayerUI();
+
+	void RestoreStamina(float DeltaSecond);
+	void ConsumeRunningStamina(float DeltaSecond);
+
+	float currentRunningTime = 0.f;
+	float ConsumeStaminaRunningTime = 0.25f;
+
+	float currentStaminaTime = 0.f;
+	float StaminaTime = 0.25f;
+
+	void FallingDamage();
+
+	float PreviousHeight;
 };

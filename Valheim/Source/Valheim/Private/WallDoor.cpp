@@ -44,6 +44,13 @@ AWallDoor::AWallDoor()
 	SetBuildWallDoor();
 
 }
+
+void AWallDoor::BeginPlay()
+{
+	
+}
+
+
 void AWallDoor::SetBuildWallDoor()
 {
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Script/Engine.StaticMesh'/Game/UP/BuildingMaterial/Build/wall_door.wall_door'"));
@@ -56,6 +63,38 @@ void AWallDoor::SetBuildWallDoor()
 		UE_LOG(LogTemp, Warning, TEXT("Failed"));
 	}
 }
+
+//void AWallDoor::UpdateDoorRotation(float value)
+//{
+//	IsOpening = true;
+//	FRotator NewRotation = DefaultRotation;
+//	NewRotation.Yaw += value;
+//	GetStaticMeshComponent()->SetWorldRotation(NewRotation);
+//}
+//
+//void AWallDoor::FinishedDoorRotation()
+//{
+//	IsOpening = false;
+//}
+//
+//void AWallDoor::InteractWithBuild_Implementation()
+//{
+//
+//	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("InteractWithBuild_Implementation"));
+//
+//	if (!IsOpening) {
+//		if (!IsOpen) {
+//			IsOpen = true;
+//			DoorTimeline.Play();
+//			
+//		}
+//		else {
+//			IsOpen = false;
+//			DoorTimeline.Reverse();
+//		}
+//	}
+//
+//}
 
 void AWallDoor::SetMesh_Implementation(UStaticMesh* Mesh)
 {

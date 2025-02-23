@@ -35,4 +35,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USceneComponent* SceneComp;
 
+	int32 Health = 100;
+
+	void TakeDamage(float Damage);
+
+	bool HasTakenDamage = false;
+
+	void ResetDamageState();
 };

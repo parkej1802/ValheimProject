@@ -57,6 +57,7 @@ AValheimPlayer::AValheimPlayer()
 	
 	// CraftingSystem
 	CraftingComp = CreateDefaultSubobject<UAC_CraftingComponent>(TEXT("CraftingComp"));
+<<<<<<< HEAD
 	
 	
 	 	// 2.23 KMS 무기 외관 불러오기
@@ -64,14 +65,39 @@ AValheimPlayer::AValheimPlayer()
 	AxeMesh->SetupAttachment(GetMesh(), TEXT("WeaponSocket"));
 	AxeMesh->SetRelativeScale3D(FVector(0.9f));
 	AxeMesh->SetRelativeLocationAndRotation(FVector(-1.f, 6.f, 42.f), FRotator(0.f, 90.f, 80.f));
+=======
+>>>>>>> origin/MergingBranch
 
-		ConstructorHelpers::FObjectFinder<UStaticMesh>TempAxeMesh(TEXT("/Script/Engine.StaticMesh'/Game/Fab/Megascans/3D/Axe_ueqgcaifa/Medium/ueqgcaifa_tier_2.ueqgcaifa_tier_2'"));
+	
+	// 2.23 KMS 무기 외관 불러오기하면 언리얼 뷰포트에서 플레이어가 안보임.
+	//AxeComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AxeComp"));
+	//RootComponent = AxeComp;
+	//AxeComp->SetRelativeScale3D(FVector(1));
+	//AxeComp->SetRelativeLocationAndRotation(FVector(-14, 30, 50), FRotator(50, 0, 0));
 
+<<<<<<< HEAD
 			if (TempAxeMesh.Succeeded())
 	{
 		AxeMesh->SetStaticMesh(TempAxeMesh.Object);
 	}
 			AxeMesh->SetCollisionProfileName(FName("AxeWeapon"));
+=======
+	//
+	//
+	// 	// 2.23 KMS 무기 외관 불러오기
+	//AxeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AxeMesh"));
+	//AxeMesh->SetupAttachment(GetMesh(), TEXT("Weapon"));
+	//AxeMesh->SetRelativeScale3D(FVector(1.0f));
+	//AxeMesh->SetRelativeLocationAndRotation(FVector(-40.f, 30.f, 90.f), FRotator(90.f, -15.f, 80.f));
+
+
+	//	ConstructorHelpers::FObjectFinder<UStaticMesh>TempAxeMesh(TEXT("/Script/Engine.StaticMesh'/Game/Fab/Megascans/3D/Axe_ueqgcaifa/Medium/ueqgcaifa_tier_2.ueqgcaifa_tier_2'"));
+
+	//		if (TempAxeMesh.Succeeded())
+	//{
+	//	AxeMesh->SetStaticMesh(TempAxeMesh.Object);
+	//}
+>>>>>>> origin/MergingBranch
 
 }
 
@@ -94,6 +120,8 @@ void AValheimPlayer::BeginPlay()
 		}
 	}
 
+	ShowPlayerUI();
+
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	BuildComp->SetCameraBS(tpsCamComp);
@@ -102,6 +130,10 @@ void AValheimPlayer::BeginPlay()
 	BuildComp->InventoryComp = InventoryComp;
 	// 애님몽타주 구현용 애님인스턴스 KMS
 	AnimInstance = GetMesh()->GetAnimInstance();
+
+	anim = Cast<UValheimPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	
+	PreviousHeight = GetActorLocation().Z;
 }
 
 // Called every frame
@@ -113,6 +145,11 @@ void AValheimPlayer::Tick(float DeltaTime)
 
 	AddMovementInput(Direction);
 	Direction = FVector::ZeroVector;
+
+	RestoreStamina(DeltaTime);
+	FallingDamage();
+	ConsumeRunningStamina(DeltaTime);
+	CheckMaterialStatus(DeltaTime);
 
 }
 
@@ -140,12 +177,14 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		PlayerInput->BindAction(IA_InventoryMode, ETriggerEvent::Started, this, &AValheimPlayer::InventoryModeOn);
 		PlayerInput->BindAction(IA_PickUp, ETriggerEvent::Started, this, &AValheimPlayer::PickUp);
 
-		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AValheimPlayer::SprintStart);
-		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintStart);
+		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &AValheimPlayer::SprintStart);
+		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintStop);
 
 		PlayerInput->BindAction(IA_Roll, ETriggerEvent::Started, this, &AValheimPlayer::Roll);
 		PlayerInput->BindAction(IA_Attack, ETriggerEvent::Started, this, &AValheimPlayer::Attack);
-		
+		PlayerInput->BindAction(IA_ComboAttack, ETriggerEvent::Started, this, &AValheimPlayer::ComboAttack);
+
+		PlayerInput->BindAction(IA_Block, ETriggerEvent::Started, this, &AValheimPlayer::Block);
 
 	}
 }
@@ -164,7 +203,10 @@ void AValheimPlayer::LookUp(const FInputActionValue& inputValue)
 
 void AValheimPlayer::InputJump(const FInputActionValue& inputValue)
 {
-	Jump();
+	if (Stamina >= 8) {
+		Jump();
+		Stamina -= 8;
+	}
 }
 
 void AValheimPlayer::Move(const FInputActionValue& inputValue)
@@ -179,50 +221,127 @@ void AValheimPlayer::Move(const FInputActionValue& inputValue)
 
 void AValheimPlayer::SprintStart(const FInputActionValue& inputValue)
 {
+	if (IsAttack) return;
+
 	auto Movement = GetCharacterMovement();
 	if (!Movement) return;
-	
-	if (Movement->MaxWalkSpeed > WalkSpeed) 
+
+	if (Stamina > 0)
 	{
-		Movement->MaxWalkSpeed = WalkSpeed;
-	}
-	else 
-	{
+		IsRunning = true;
 		Movement->MaxWalkSpeed = SprintSpeed;
 	}
+	else {
+		Movement->MaxWalkSpeed = WalkSpeed;
+	}
+}
+
+void AValheimPlayer::SprintStop(const FInputActionValue& inputValue)
+{
+	auto Movement = GetCharacterMovement();
+	if (!Movement) return;
+
+	IsRunning = false;
+	Movement->MaxWalkSpeed = WalkSpeed;
 }
 
 void AValheimPlayer::Roll(const FInputActionValue& inputValue)
 {
-	GetMesh()->GetAnimInstance();
-
-
-	GetCharacterMovement()->MaxWalkSpeed = RollSpeed;
-	AnimInstance;
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Roll"));
+	if (anim && !BuildComp->IsBuildMode && !IsAttack) {
+		IsRolling = true;
+		//GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		//anim->PlayRollAnim();
+		
+	}
 }
 
 void AValheimPlayer::Attack(const FInputActionValue& inputValue)
 {
-	
-	if (AM_PlayerAttack)
+	if (!BuildComp->IsBuildMode && anim && !IsAttack && Stamina > 5)
 	{
-		AnimInstance;
-		if (AnimInstance && AM_PlayerAttack)
-		{
-			GetCharacterMovement()->MaxWalkSpeed = 0.0f; 
-			// 공격 중 이동 금지
-			AnimInstance->Montage_Play(AM_PlayerAttack);
-			
-		}
+		IsAttack = true;
+		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		anim->PlayAttackAnim();
+		Stamina -= 5;
 
 	}
-
 }
 
 void AValheimPlayer::OnAttackEnd()
 {
 	
+}
+
+void AValheimPlayer::ComboAttack(const FInputActionValue& inputValue)
+{
+	if (!BuildComp->IsBuildMode && anim && !IsAttack && Stamina > 10)
+	{
+		IsAttack = true;
+		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		anim->PlayComboAttackAnim();
+		Stamina -= 10;
+	}
+}
+
+void AValheimPlayer::Block(const FInputActionValue& inputValue)
+{
+	if (!BuildComp->IsBuildMode && anim && !IsAttack)
+	{
+		IsBlock = true;
+		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		anim->PlayBlockAnim();
+	}
+}
+
+void AValheimPlayer::ShowPlayerUI()
+{
+	if (PlayerWidget)
+	{
+		PlayerUI = CreateWidget<UPlayerMainWidget>(GetWorld(), PlayerWidget);
+	}
+	if (PlayerUI)
+	{
+		PlayerUI->AddToViewport();
+	}
+}
+
+void AValheimPlayer::RestoreStamina(float DeltaSecond)
+{
+	if (!IsAttack && !IsRunning && Stamina < 50 && !GetCharacterMovement()->IsFalling()) {
+		currentStaminaTime += DeltaSecond;
+		if (currentStaminaTime >= StaminaTime) {
+			Stamina += 1;
+			currentStaminaTime = 0.f;
+		}
+	}
+}
+
+void AValheimPlayer::ConsumeRunningStamina(float DeltaSecond)
+{
+	if (IsRunning && !IsAttack) {
+		currentRunningTime += DeltaSecond;
+		if (currentRunningTime >= ConsumeStaminaRunningTime && Stamina > 0) {
+			Stamina -= 1;
+			currentRunningTime = 0.f;
+		}
+	}
+}
+
+void AValheimPlayer::FallingDamage()
+{
+	FVector CurrentLocation = GetActorLocation();
+	float CurrentHeight = CurrentLocation.Z;
+
+	float FallDistance = FMath::Abs(CurrentHeight - PreviousHeight);
+
+	if (FallDistance > 500.0f)
+	{
+		float Damage = FallDistance / 100.0f;
+		CurrentHealth = FMath::Max(CurrentHealth - Damage, 0.0f);
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Falling Damage: %.2f"), Damage));
+	}
+
+	PreviousHeight = CurrentHeight;
 }
 
 void AValheimPlayer::BuildModeOn()
@@ -284,8 +403,11 @@ void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
 			}
 
 			if (BuildComp->IsIngredientsEnough(PreviousSlotName)) {
-
+				HasEnoughMaterial = true;
 				BuildComp->SpawnBuild(PreviousSlotName);
+			}
+			else {
+				HasEnoughMaterial = false;
 			}
 
 		}
@@ -349,11 +471,62 @@ void AValheimPlayer::CraftModeOn()
 	}
 }
 
+void AValheimPlayer::CheckMaterialStatus(float DeltaSecond)
+{
+	if (!HasEnoughMaterial) {
+		if (PlayerUI) {
+			PlayerUI->NotEnoughMaterialText->SetVisibility(ESlateVisibility::Visible);
+		}
+		currentTextTime += DeltaSecond;
+		if (currentTextTime >= TextTime) {
+			PlayerUI->NotEnoughMaterialText->SetVisibility(ESlateVisibility::Hidden);
+			currentTextTime = 0.f;
+			HasEnoughMaterial = true;
+		}
+	}
+}
+
 void AValheimPlayer::PickUp()
 {
 	//InventoryComp->DetectPlayer();
 	InventoryComp->PickUpItem();
+	OpenBuilding();
 }
+
+void AValheimPlayer::OpenBuilding()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+
+	FVector StartLocation = tpsCamComp->GetForwardVector() * 300 + tpsCamComp->GetComponentLocation() ;
+	FVector EndLocation = tpsCamComp->GetForwardVector() * 1500 + tpsCamComp->GetComponentLocation();
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		CollisionParams.AddIgnoredActor(OwnerActor);
+	}
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
+
+	if (bHit)
+	{
+		AActor* HitActor = HitResult.GetActor();
+
+		if (HitActor)
+		{
+			if (HitActor->Implements<UBuildInterface>())
+			{
+				IBuildInterface* BuildActor = Cast<IBuildInterface>(HitActor);
+
+				if (BuildActor)
+				{
+					IBuildInterface::Execute_InteractWithBuild(HitActor);
+				}
+			}
+		}
+	}
+}	
 
 void AValheimPlayer::InventoryModeOn()
 {
@@ -382,7 +555,4 @@ void AValheimPlayer::InventoryModeOn()
 		pc->SetInputMode(UIInputMode);
 		pc->bShowMouseCursor = true;
 	}
-
 }
-
-
