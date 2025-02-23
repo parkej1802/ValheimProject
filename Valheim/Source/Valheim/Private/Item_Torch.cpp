@@ -4,6 +4,7 @@
 #include "Item_Torch.h"
 #include "Components/SceneComponent.h"
 
+
 AItem_Torch::AItem_Torch()
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -42,4 +43,24 @@ AItem_Torch::AItem_Torch()
 	TorchItem.ItemClass = AItem_Torch::StaticClass();
 
 	SetItemData(TorchItem);
+}
+
+
+void AItem_Torch::BeginPlay()
+{
+	Super::BeginPlay();
+
+	/*GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Torch spawned successfully!"));
+	if (!PointLight)
+	{
+		PointLight = NewObject<UPointLightComponent>(this, UPointLightComponent::StaticClass());
+		PointLight->SetupAttachment(MeshComp);
+		PointLight->RegisterComponent();
+	}
+
+	PointLight->SetVisibility(true);
+	PointLight->SetIntensity(300.0f);
+	PointLight->SetLightColor(FLinearColor(1.0f, 0.6f, 0.2f));
+	PointLight->SetAttenuationRadius(500.0f);
+	PointLight->SetCastShadows(true);*/
 }

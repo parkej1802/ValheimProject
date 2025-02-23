@@ -15,6 +15,9 @@ class VALHEIM_API AItem_Torch : public AItem
 {
 	GENERATED_BODY()
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	AItem_Torch();
 

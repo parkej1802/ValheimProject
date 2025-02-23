@@ -57,6 +57,8 @@ void UInventorySlot::OnItemButtonClicked()
 					SpawnedItem = GetWorld()->SpawnActor<AItem>(ItemClass, SpawnTransform);
 				}
 
+				// AItem* SpawnedItem = GetWorld()->SpawnActor<AItem>(ItemClass, SpawnTransform);
+
 				if (SpawnedItem) {
 					// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Item Spawn in inventorySlot!"));
 					SpawnedItem->SetItemData(Item);
