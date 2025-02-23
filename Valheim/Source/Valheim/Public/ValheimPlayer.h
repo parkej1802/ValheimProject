@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Animation/AnimMontage.h"
 #include "ValheimPlayerAnimInstance.h"
+#include "PlayerMainWidget.h"
 
 class UAC_BuildComponent;
 class UAC_InventoryComponent;
@@ -125,8 +126,9 @@ public:
 	void RotateRightR(const FInputActionValue& inputValue);
 	void RotateLeftQ(const FInputActionValue& inputValue);
 
+	void OpenBuilding();
 
-	// Crafting System
+// Crafting System
 public:
 	UPROPERTY(EditAnywhere, Category = CraftingSystem)
 	class UInputAction* IA_CraftMode;
@@ -179,6 +181,7 @@ public:
 
 	// 달리기
 	void SprintStart(const FInputActionValue& inputValue);
+	void SprintStop(const FInputActionValue& inputValue);
 
 	UPROPERTY(EditAnywhere, Category = PlayerAnimation)
 	float SprintSpeed = 1000.0f;
@@ -209,8 +212,48 @@ public:
 	bool IsAttack = false;
 	
 
-// 빌딩 상호작용
+// 플레이어 스탯
 public:
-	void OpenBuilding();
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 CurrentHealth = 25;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 MaxHealth = 25;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 Level = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 MaxExp = 4;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 currentExp = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 Stamina = 50;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	int32 MaxStamina = 50;
+
+	bool IsRunning = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerStat")
+	TSubclassOf<UUserWidget> PlayerWidget;
+
+	class UPlayerMainWidget* PlayerUI;
+
+	void ShowPlayerUI();
+
+	void RestoreStamina(float DeltaSecond);
+	void ConsumeRunningStamina(float DeltaSecond);
+
+	float currentRunningTime = 0.f;
+	float ConsumeStaminaRunningTime = 0.25f;
+
+	float currentStaminaTime = 0.f;
+	float StaminaTime = 0.25f;
+
+	void FallingDamage();
+
+	float PreviousHeight;
 };

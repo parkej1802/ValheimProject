@@ -76,6 +76,8 @@ void AValheimPlayer::BeginPlay()
 		}
 	}
 
+	ShowPlayerUI();
+
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 
 	BuildComp->SetCameraBS(tpsCamComp);
@@ -86,6 +88,8 @@ void AValheimPlayer::BeginPlay()
 	AnimInstance = GetMesh()->GetAnimInstance();
 
 	anim = Cast<UValheimPlayerAnimInstance>(GetMesh()->GetAnimInstance());
+	
+	PreviousHeight = GetActorLocation().Z;
 }
 
 // Called every frame
@@ -97,6 +101,10 @@ void AValheimPlayer::Tick(float DeltaTime)
 
 	AddMovementInput(Direction);
 	Direction = FVector::ZeroVector;
+
+	RestoreStamina(DeltaTime);
+	FallingDamage();
+	ConsumeRunningStamina(DeltaTime);
 
 }
 
@@ -124,13 +132,11 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 		PlayerInput->BindAction(IA_InventoryMode, ETriggerEvent::Started, this, &AValheimPlayer::InventoryModeOn);
 		PlayerInput->BindAction(IA_PickUp, ETriggerEvent::Started, this, &AValheimPlayer::PickUp);
 
-		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Started, this, &AValheimPlayer::SprintStart);
-		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintStart);
+		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &AValheimPlayer::SprintStart);
+		PlayerInput->BindAction(IA_Sprint, ETriggerEvent::Completed, this, &AValheimPlayer::SprintStop);
 
 		PlayerInput->BindAction(IA_Roll, ETriggerEvent::Started, this, &AValheimPlayer::Roll);
 		PlayerInput->BindAction(IA_Attack, ETriggerEvent::Started, this, &AValheimPlayer::Attack);
-		
-
 	}
 }
 
@@ -148,7 +154,10 @@ void AValheimPlayer::LookUp(const FInputActionValue& inputValue)
 
 void AValheimPlayer::InputJump(const FInputActionValue& inputValue)
 {
-	Jump();
+	if (Stamina >= 8) {
+		Jump();
+		Stamina -= 8;
+	}
 }
 
 void AValheimPlayer::Move(const FInputActionValue& inputValue)
@@ -163,22 +172,30 @@ void AValheimPlayer::Move(const FInputActionValue& inputValue)
 
 void AValheimPlayer::SprintStart(const FInputActionValue& inputValue)
 {
+	if (IsAttack) return;
+
 	auto Movement = GetCharacterMovement();
 	if (!Movement) return;
-	
-	if (Movement->MaxWalkSpeed > WalkSpeed) 
+
+	if (Stamina > 0)
 	{
-		Movement->MaxWalkSpeed = WalkSpeed;
-	}
-	else 
-	{
+		IsRunning = true;
 		Movement->MaxWalkSpeed = SprintSpeed;
 	}
 }
 
+void AValheimPlayer::SprintStop(const FInputActionValue& inputValue)
+{
+	auto Movement = GetCharacterMovement();
+	if (!Movement) return;
+
+	IsRunning = false;
+	Movement->MaxWalkSpeed = WalkSpeed;
+}
+
 void AValheimPlayer::Roll(const FInputActionValue& inputValue)
 {
-	if (anim) {
+	if (anim && !BuildComp->IsBuildMode && !IsAttack) {
 		IsRolling = true;
 		//GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 		//anim->PlayRollAnim();
@@ -188,11 +205,12 @@ void AValheimPlayer::Roll(const FInputActionValue& inputValue)
 
 void AValheimPlayer::Attack(const FInputActionValue& inputValue)
 {
-	if (!BuildComp->IsBuildMode && anim && !IsAttack)
+	if (!BuildComp->IsBuildMode && anim && !IsAttack && Stamina > 5)
 	{
 		IsAttack = true;
 		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 		anim->PlayAttackAnim();
+		Stamina -= 5;
 	}
 }
 
@@ -201,6 +219,56 @@ void AValheimPlayer::OnAttackEnd()
 	
 }
 
+void AValheimPlayer::ShowPlayerUI()
+{
+	if (PlayerWidget)
+	{
+		PlayerUI = CreateWidget<UPlayerMainWidget>(GetWorld(), PlayerWidget);
+	}
+	if (PlayerUI)
+	{
+		PlayerUI->AddToViewport();
+	}
+}
+
+void AValheimPlayer::RestoreStamina(float DeltaSecond)
+{
+	if (!IsAttack && !IsRunning && Stamina < 50 && !GetCharacterMovement()->IsFalling()) {
+		currentStaminaTime += DeltaSecond;
+		if (currentStaminaTime >= StaminaTime) {
+			Stamina += 1;
+			currentStaminaTime = 0.f;
+		}
+	}
+}
+
+void AValheimPlayer::ConsumeRunningStamina(float DeltaSecond)
+{
+	if (IsRunning && !IsAttack) {
+		currentRunningTime += DeltaSecond;
+		if (currentRunningTime >= ConsumeStaminaRunningTime && Stamina > 0) {
+			Stamina -= 1;
+			currentRunningTime = 0.f;
+		}
+	}
+}
+
+void AValheimPlayer::FallingDamage()
+{
+	FVector CurrentLocation = GetActorLocation();
+	float CurrentHeight = CurrentLocation.Z;
+
+	float FallDistance = FMath::Abs(CurrentHeight - PreviousHeight);
+
+	if (FallDistance > 500.0f)
+	{
+		float Damage = FallDistance / 100.0f;
+		CurrentHealth = FMath::Max(CurrentHealth - Damage, 0.0f);
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Falling Damage: %.2f"), Damage));
+	}
+
+	PreviousHeight = CurrentHeight;
+}
 
 void AValheimPlayer::BuildModeOn()
 {
@@ -361,24 +429,11 @@ void AValheimPlayer::OpenBuilding()
 
 				if (BuildActor)
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("Hit Actor: %s"), *HitActor->GetName()));
-
 					IBuildInterface::Execute_InteractWithBuild(HitActor);
-
-					GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Hit Actor Implements IBuildInterface!"));
 				}
-			}
-			else
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hit Actor does NOT implement IBuildInterface!"));
 			}
 		}
 	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("LineTrace did not hit anything."));
-	}
-
 }	
 
 void AValheimPlayer::InventoryModeOn()
@@ -410,5 +465,3 @@ void AValheimPlayer::InventoryModeOn()
 	}
 
 }
-
-
