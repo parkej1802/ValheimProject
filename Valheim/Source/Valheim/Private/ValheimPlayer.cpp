@@ -201,6 +201,7 @@ void AValheimPlayer::OnAttackEnd()
 	
 }
 
+
 void AValheimPlayer::BuildModeOn()
 {
 	if (GEngine)
@@ -329,7 +330,56 @@ void AValheimPlayer::PickUp()
 {
 	//InventoryComp->DetectPlayer();
 	InventoryComp->PickUpItem();
+	OpenBuilding();
 }
+
+void AValheimPlayer::OpenBuilding()
+{
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+
+	FVector StartLocation = tpsCamComp->GetForwardVector() * 300 + tpsCamComp->GetComponentLocation() ;
+	FVector EndLocation = tpsCamComp->GetForwardVector() * 1500 + tpsCamComp->GetComponentLocation();
+
+	AActor* OwnerActor = GetOwner();
+	if (OwnerActor)
+	{
+		CollisionParams.AddIgnoredActor(OwnerActor);
+	}
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, CollisionParams);
+
+	if (bHit)
+	{
+		AActor* HitActor = HitResult.GetActor();
+
+		if (HitActor)
+		{
+			if (HitActor->Implements<UBuildInterface>())
+			{
+				IBuildInterface* BuildActor = Cast<IBuildInterface>(HitActor);
+
+				if (BuildActor)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("Hit Actor: %s"), *HitActor->GetName()));
+
+					IBuildInterface::Execute_InteractWithBuild(HitActor);
+
+					GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Hit Actor Implements IBuildInterface!"));
+				}
+			}
+			else
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hit Actor does NOT implement IBuildInterface!"));
+			}
+		}
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Blue, TEXT("LineTrace did not hit anything."));
+	}
+
+}	
 
 void AValheimPlayer::InventoryModeOn()
 {

@@ -22,4 +22,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Build")
 	void SetMesh(UStaticMesh* Mesh);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Build")
+	void InteractWithBuild();
 };

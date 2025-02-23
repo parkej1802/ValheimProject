@@ -5,28 +5,30 @@
 
 ABuildDoor::ABuildDoor()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	SetBuildDoor();
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> CurveFinder(TEXT("/Game/UP/BuildingMaterial/BuildTimeline/DoorTimeline.DoorTimeline"));
 	if (CurveFinder.Succeeded())
 	{
 		DoorCurve = CurveFinder.Object;
 	}
+	else
+	{
+		DoorCurve = nullptr;
+	}
+
 }
+
 
 void ABuildDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (DoorCurve != nullptr) {
-		// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("BuildDoor curve Valid!"));
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("BuildDoor curve Valid!"));
 	}
 	else {
-		// GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("BuildDoor curve Failed"));
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("BuildDoor curve Failed"));
 	}
-
-	GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
 
 	DefaultRotation = GetStaticMeshComponent()->GetComponentRotation();
 
@@ -44,6 +46,7 @@ void ABuildDoor::BeginPlay()
 void ABuildDoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("TickWorking"));
 	DoorTimeline.TickTimeline(DeltaTime);
 }
 
@@ -53,6 +56,10 @@ void ABuildDoor::SetBuildDoor()
 	if (MeshAsset.Succeeded())
 	{
 		GetStaticMeshComponent()->SetStaticMesh(MeshAsset.Object);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed"));
 	}
 }
 

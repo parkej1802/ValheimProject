@@ -198,6 +198,7 @@ public:
 	// 공격
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	class UInputAction* IA_Attack;
+
 	void Attack(const FInputActionValue& inputValue);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DefaultSlot")
@@ -208,5 +209,8 @@ public:
 	bool IsAttack = false;
 	
 
+// 빌딩 상호작용
+public:
+	void OpenBuilding();
 	
 };
