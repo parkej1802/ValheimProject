@@ -149,7 +149,12 @@ public:
 
 	FName PreviousSlotName;
 
-	// Inventory System
+	bool HasEnoughMaterial = true;
+	void CheckMaterialStatus(float DeltaSecond);
+	float currentTextTime = 0.f;
+	float TextTime = 2.f;
+
+// Inventory System
 public:
 	UPROPERTY(EditAnywhere, Category = InventorySystem)
 	class UInputAction* IA_InventoryMode;

@@ -334,8 +334,8 @@ bool UAC_BuildComponent::IsIngredientsEnough(FName BuildingName)
 
 		if (!bHasEnough)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red,
-				FString::Printf(TEXT("Not enough materials for %s"), *RequiredItem->GetName()));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Not enough materials for %s"), *RequiredItem->GetName()));
+				
 			return false;
 		}
 	}

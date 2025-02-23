@@ -52,7 +52,7 @@ void UAC_CraftingComponent::GetDataTableRowNames()
 {
 	if (CraftableDB)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("CraftableDB is valid!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("CraftableDB is valid!"));
 		RowNames = CraftableDB->GetRowNames();
 		CalculateUnlockedItem();
 	}

@@ -105,6 +105,7 @@ void AValheimPlayer::Tick(float DeltaTime)
 	RestoreStamina(DeltaTime);
 	FallingDamage();
 	ConsumeRunningStamina(DeltaTime);
+	CheckMaterialStatus(DeltaTime);
 
 }
 
@@ -354,8 +355,11 @@ void AValheimPlayer::LeftMouseButton(const FInputActionValue& inputValue)
 			}
 
 			if (BuildComp->IsIngredientsEnough(PreviousSlotName)) {
-
+				HasEnoughMaterial = true;
 				BuildComp->SpawnBuild(PreviousSlotName);
+			}
+			else {
+				HasEnoughMaterial = false;
 			}
 
 		}
@@ -416,6 +420,21 @@ void AValheimPlayer::CraftModeOn()
 		FInputModeGameAndUI UIInputMode;
 		pc->SetInputMode(UIInputMode);
 		pc->bShowMouseCursor = true;
+	}
+}
+
+void AValheimPlayer::CheckMaterialStatus(float DeltaSecond)
+{
+	if (!HasEnoughMaterial) {
+		if (PlayerUI) {
+			PlayerUI->NotEnoughMaterialText->SetVisibility(ESlateVisibility::Visible);
+		}
+		currentTextTime += DeltaSecond;
+		if (currentTextTime >= TextTime) {
+			PlayerUI->NotEnoughMaterialText->SetVisibility(ESlateVisibility::Hidden);
+			currentTextTime = 0.f;
+			HasEnoughMaterial = true;
+		}
 	}
 }
 

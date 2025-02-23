@@ -15,6 +15,8 @@ void UPlayerMainWidget::NativeConstruct()
 
 		PlayerCharacter = Cast<AValheimPlayer>(PlayerPawn);
 	}
+
+	NotEnoughMaterialText->SetVisibility(ESlateVisibility::Hidden);
 	
 }
 

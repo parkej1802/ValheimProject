@@ -44,4 +44,7 @@ public:
 
 	void UpdatePlayerStamina();
 
+// ºôµù Àç·á
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UTextBlock* NotEnoughMaterialText;
 };
