@@ -23,4 +23,6 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UPointLightComponent* PointLight;
+
+	int32 Health = 1;
 };
