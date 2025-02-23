@@ -535,5 +535,4 @@ void AValheimPlayer::InventoryModeOn()
 		pc->SetInputMode(UIInputMode);
 		pc->bShowMouseCursor = true;
 	}
-
 }
