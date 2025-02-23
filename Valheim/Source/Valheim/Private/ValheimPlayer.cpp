@@ -61,9 +61,9 @@ AValheimPlayer::AValheimPlayer()
 	
 	 	// 2.23 KMS 무기 외관 불러오기
 	AxeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AxeMesh"));
-	AxeMesh->SetupAttachment(GetMesh(), TEXT("Weapon"));
-	AxeMesh->SetRelativeScale3D(FVector(1.0f));
-	AxeMesh->SetRelativeLocationAndRotation(FVector(-40.f, 30.f, 90.f), FRotator(90.f, -15.f, 80.f));
+	AxeMesh->SetupAttachment(GetMesh(), TEXT("WeaponSocket"));
+	AxeMesh->SetRelativeScale3D(FVector(0.9f));
+	AxeMesh->SetRelativeLocationAndRotation(FVector(-1.f, 6.f, 42.f), FRotator(0.f, 90.f, 80.f));
 
 		ConstructorHelpers::FObjectFinder<UStaticMesh>TempAxeMesh(TEXT("/Script/Engine.StaticMesh'/Game/Fab/Megascans/3D/Axe_ueqgcaifa/Medium/ueqgcaifa_tier_2.ueqgcaifa_tier_2'"));
 
@@ -71,6 +71,7 @@ AValheimPlayer::AValheimPlayer()
 	{
 		AxeMesh->SetStaticMesh(TempAxeMesh.Object);
 	}
+			AxeMesh->SetCollisionProfileName(FName("AxeWeapon"));
 
 }
 

@@ -18,6 +18,7 @@ AEnermyTroll::AEnermyTroll()
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
+	tempMesh->SetCollisionProfileName(FName("EnermyTroll"));
 	fsm = CreateDefaultSubobject<UEnermyFSM>(TEXT("FSM"));
 }
 

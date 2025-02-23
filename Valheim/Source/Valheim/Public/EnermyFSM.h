@@ -61,7 +61,7 @@ float attackRange = 150.0f;
 
 UPROPERTY(EditAnywhere, Category=FSM)
 float attackDelayTime = 2.0f;
-
+// 피격 알림 이벤트 함수
 void OnDamageProcess();
 
 void MoveState();
