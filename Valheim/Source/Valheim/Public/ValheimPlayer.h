@@ -27,7 +27,18 @@ class VALHEIM_API AValheimPlayer : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	AValheimPlayer();		
+
+	AValheimPlayer();
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Animation")
+	class UAnimMontage* AM_PlayerAttack;
+
+// 2.23 KMS 무기 외관 및 충돌체 생성
+public:
+// 무기 외관 컴프
+UPROPERTY(VisibleAnywhere, Category=AxeMesh)
+class UStaticMeshComponent* AxeComp;
+
 
 protected:
 	// Called when the game starts or when spawned

@@ -13,6 +13,9 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "Components/SphereComponent.h"
 
 
 
@@ -55,6 +58,30 @@ AValheimPlayer::AValheimPlayer()
 	// CraftingSystem
 	CraftingComp = CreateDefaultSubobject<UAC_CraftingComponent>(TEXT("CraftingComp"));
 
+	/*
+	// 2.23 KMS 무기 외관 불러오기하면 언리얼 뷰포트에서 플레이어가 안보임.
+	AxeComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AxeComp"));
+	RootComponent = AxeComp;
+	AxeComp->SetRelativeScale3D(FVector(1));
+	AxeComp->SetRelativeLocationAndRotation(FVector(-14, 30, 50), FRotator(50, 0, 0));
+
+	ConstructorHelpers::FObjectFinder<UStaticMesh>TempAxeMesh(TEXT("/Script/Engine.Texture2D'/Game/Fab/Megascans/3D/Axe_ueqgcaifa/Medium/axe.axe'"));
+	
+	
+	if (TempAxeMesh.Succeeded())
+	{
+		AxeComp->SetStaticMesh(TempAxeMesh.Object);
+	}
+	/*
+	
+
+	/*
+	collisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComp"));
+	collisionComp->SetCollisionProfileName(TEXT("BlockAll"));
+	// 충돌체 크기 설정
+	collisionComp->SetSphereRadius(13);
+	RootComponent = collisionComp;
+	*/
 }
 
 // Called when the game starts or when spawned
@@ -216,6 +243,7 @@ void AValheimPlayer::Attack(const FInputActionValue& inputValue)
 		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 		anim->PlayAttackAnim();
 		Stamina -= 5;
+
 	}
 }
 
