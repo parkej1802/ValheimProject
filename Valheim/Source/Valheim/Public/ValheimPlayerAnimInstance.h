@@ -70,4 +70,19 @@ public:
 	float AttackDuration = 0.f;
 	FTimerHandle AttackTimerHandle;
 
+	// 콤보 공격
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnimation)
+	class UAnimMontage* ComboAttackAnimMontage;
+	float ComboAttackDuration = 0.f;
+
+	void PlayComboAttackAnim();
+
+	// 방어
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = PlayerAnimation)
+	class UAnimMontage* BlockAnimMontage;
+	
+	void PlayBlockAnim();
+	float BlockDuration = 0.f;
+
+	void IsBlockEnd();
 };

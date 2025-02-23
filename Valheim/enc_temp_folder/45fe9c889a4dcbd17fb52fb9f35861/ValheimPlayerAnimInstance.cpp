@@ -88,7 +88,7 @@ void UValheimPlayerAnimInstance::PlayComboAttackAnim()
 
 void UValheimPlayerAnimInstance::PlayBlockAnim()
 {
-	Montage_Play(BlockAnimMontage);
+	Montage_Play(ComboAttackAnimMontage);
 	UWorld* World = player->GetWorld();
 	if (World) {
 		World->GetTimerManager().SetTimer(AttackTimerHandle, this, &UValheimPlayerAnimInstance::IsBlockEnd, BlockDuration, false);

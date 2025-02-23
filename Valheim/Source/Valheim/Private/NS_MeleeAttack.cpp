@@ -76,7 +76,7 @@ void UNS_MeleeAttack::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequence
 					ATree* HitTree = Cast<ATree>(HitActor);
 					if (HitTree)
 					{
-						HitTree->TakeDamage(50.0f);
+						HitTree->TakeDamage(15.0f);
 					}
 				}
 

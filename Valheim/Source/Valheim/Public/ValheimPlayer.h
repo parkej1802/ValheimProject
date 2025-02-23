@@ -204,13 +204,27 @@ public:
 
 	void Attack(const FInputActionValue& inputValue);
 
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "DefaultSlot")
 	bool AttackPlay = false;
 	
 	void OnAttackEnd();
 
 	bool IsAttack = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_ComboAttack;
+
+	void ComboAttack(const FInputActionValue& inputValue);
 	
+	// 방어
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	class UInputAction* IA_Block;
+
+	void Block(const FInputActionValue& inputValue);
+
+	bool IsBlock = false;
+
 
 // 플레이어 스탯
 public:

@@ -137,6 +137,10 @@ void AValheimPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 		PlayerInput->BindAction(IA_Roll, ETriggerEvent::Started, this, &AValheimPlayer::Roll);
 		PlayerInput->BindAction(IA_Attack, ETriggerEvent::Started, this, &AValheimPlayer::Attack);
+		PlayerInput->BindAction(IA_ComboAttack, ETriggerEvent::Started, this, &AValheimPlayer::ComboAttack);
+
+		PlayerInput->BindAction(IA_Block, ETriggerEvent::Started, this, &AValheimPlayer::Block);
+
 	}
 }
 
@@ -217,6 +221,27 @@ void AValheimPlayer::Attack(const FInputActionValue& inputValue)
 void AValheimPlayer::OnAttackEnd()
 {
 	
+}
+
+void AValheimPlayer::ComboAttack(const FInputActionValue& inputValue)
+{
+	if (!BuildComp->IsBuildMode && anim && !IsAttack && Stamina > 10)
+	{
+		IsAttack = true;
+		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		anim->PlayComboAttackAnim();
+		Stamina -= 10;
+	}
+}
+
+void AValheimPlayer::Block(const FInputActionValue& inputValue)
+{
+	if (!BuildComp->IsBuildMode && anim && !IsAttack)
+	{
+		IsBlock = true;
+		GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		anim->PlayBlockAnim();
+	}
 }
 
 void AValheimPlayer::ShowPlayerUI()
