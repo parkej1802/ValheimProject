@@ -33,7 +33,7 @@ public:
 public:
 // 무기 외관 컴프
 UPROPERTY(VisibleAnywhere, Category=AxeMesh)
-class UStaticMeshComponent* AxeComp;
+class UStaticMeshComponent* AxeMesh;
 
 
 
