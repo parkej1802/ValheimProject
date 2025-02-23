@@ -213,9 +213,6 @@ void AValheimPlayer::SprintStart(const FInputActionValue& inputValue)
 		IsRunning = true;
 		Movement->MaxWalkSpeed = SprintSpeed;
 	}
-	else {
-		Movement->MaxWalkSpeed = WalkSpeed;
-	}
 }
 
 void AValheimPlayer::SprintStop(const FInputActionValue& inputValue)
