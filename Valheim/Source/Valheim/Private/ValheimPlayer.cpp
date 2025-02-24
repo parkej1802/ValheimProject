@@ -57,47 +57,28 @@ AValheimPlayer::AValheimPlayer()
 	
 	// CraftingSystem
 	CraftingComp = CreateDefaultSubobject<UAC_CraftingComponent>(TEXT("CraftingComp"));
-<<<<<<< HEAD
+//<<<<<<< HEAD
 	
 	
 	 	// 2.23 KMS 무기 외관 불러오기
+
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempAxeMesh(
+		TEXT("/Script/Engine.StaticMesh'/Game/Fab/Megascans/3D/Axe_ueqgcaifa/Medium/ueqgcaifa_tier_2.ueqgcaifa_tier_2'"));
+
 	AxeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AxeMesh"));
 	AxeMesh->SetupAttachment(GetMesh(), TEXT("WeaponSocket"));
 	AxeMesh->SetRelativeScale3D(FVector(0.9f));
 	AxeMesh->SetRelativeLocationAndRotation(FVector(-1.f, 6.f, 42.f), FRotator(0.f, 90.f, 80.f));
-=======
->>>>>>> origin/MergingBranch
 
-	
-	// 2.23 KMS 무기 외관 불러오기하면 언리얼 뷰포트에서 플레이어가 안보임.
-	//AxeComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AxeComp"));
-	//RootComponent = AxeComp;
-	//AxeComp->SetRelativeScale3D(FVector(1));
-	//AxeComp->SetRelativeLocationAndRotation(FVector(-14, 30, 50), FRotator(50, 0, 0));
-
-<<<<<<< HEAD
 			if (TempAxeMesh.Succeeded())
 	{
-		AxeMesh->SetStaticMesh(TempAxeMesh.Object);
+		GetMesh()->SetSkeletalMesh(TempAxeMesh.Object);
 	}
-			AxeMesh->SetCollisionProfileName(FName("AxeWeapon"));
-=======
-	//
-	//
-	// 	// 2.23 KMS 무기 외관 불러오기
-	//AxeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AxeMesh"));
-	//AxeMesh->SetupAttachment(GetMesh(), TEXT("Weapon"));
-	//AxeMesh->SetRelativeScale3D(FVector(1.0f));
-	//AxeMesh->SetRelativeLocationAndRotation(FVector(-40.f, 30.f, 90.f), FRotator(90.f, -15.f, 80.f));
 
-
-	//	ConstructorHelpers::FObjectFinder<UStaticMesh>TempAxeMesh(TEXT("/Script/Engine.StaticMesh'/Game/Fab/Megascans/3D/Axe_ueqgcaifa/Medium/ueqgcaifa_tier_2.ueqgcaifa_tier_2'"));
-
-	//		if (TempAxeMesh.Succeeded())
-	//{
-	//	AxeMesh->SetStaticMesh(TempAxeMesh.Object);
-	//}
->>>>>>> origin/MergingBranch
+	AxeMesh->SetCollisionProfileName(FName("AxeWeapon"));
+//=======
+	
+//>>>>>>> origin/MergingBranch
 
 }
 

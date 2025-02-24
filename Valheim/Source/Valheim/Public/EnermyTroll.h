@@ -29,5 +29,6 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
 	class UEnermyFSM* fsm;
+	
 
 };

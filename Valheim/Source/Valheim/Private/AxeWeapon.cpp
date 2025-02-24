@@ -6,6 +6,7 @@
 #include "Engine/StaticMesh.h"
 #include "Components/SphereComponent.h"
 #include "EnermyTroll.h"
+#include "EnermyFSM.h"
 
 
 // Sets default values
@@ -53,7 +54,21 @@ void AAxeWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 	AEnermyTroll* enermy = Cast<AEnermyTroll>(OtherActor);
 	if (enermy != nullptr)
 	{
-		OtherActor->Destroy();
+		AEnermyTroll* Enemy = Cast<AEnermyTroll>(OtherActor);
+		if (enermy)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Axe hit enermy: %s"), *enermy->GetName());
+
+			UEnermyFSM* EnemyFSM = Cast<UEnermyFSM>(enermy->GetComponentByClass(UEnermyFSM::StaticClass()));
+			if (EnemyFSM)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Enemy FSM Found! Calling OnDamageProcess()"));
+				EnemyFSM->OnDamageProcess();
+			}
+
+
+		}
+
 	}
 
 }

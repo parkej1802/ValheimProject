@@ -5,6 +5,12 @@
 #include "ValheimPlayer.h"
 #include "EnermyTroll.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/CapsuleComponent.h"
+#include "EnermyAnim.h"
+//#include "AIController.h"
+#include "NavigationSystem.h"
+
+
 
 // Sets default values for this component's properties
 UEnermyFSM::UEnermyFSM()
@@ -26,7 +32,12 @@ void UEnermyFSM::BeginPlay()
 	auto actor = UGameplayStatics::GetActorOfClass(GetWorld(), AValheimPlayer::StaticClass());
 	target = Cast<AValheimPlayer>(actor);
 	me = Cast<AEnermyTroll>(GetOwner());
-	
+
+	anim = Cast<UEnermyAnim>(me->GetMesh()->GetAnimInstance());
+
+	////AAIController 할당하기
+	//ai = Cast<AAIController>(me->GetController());
+	//
 }
 
 
@@ -71,24 +82,67 @@ void UEnermyFSM::IdleState()
 	{
 		mState = EEnermyState::Move;
 		currentTime = 0;
+
+		anim->animState = mState;
 	}
 }
 
 void UEnermyFSM::OnDamageProcess()
 {
-	me->Destroy();
+	hp--;
+	if (hp > 0)
+	{
+		mState = EEnermyState::Damage;
+
+		currentTime = 0;
+		// 피격 애니메이션 재생
+		int32 index = FMath::RandRange(0, 1);
+		FString SectionName = FString::Printf(TEXT("Damage%d"), index);
+		anim->PlayDamageAnim(FName(*SectionName));
+	}
+
+	else
+	{
+		mState = EEnermyState::Die;
+		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		// 죽음 애니메이션 재생
+		anim->PlayDamageAnim(TEXT("Die"));
+	}
+	anim->animState = mState;
+
+	
+
+	
+}
+
+bool UEnermyFSM::GetRandomPositionInNavMesh(FVector certerLocation, float radius, FVector& dest)
+{
+	auto ns = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+	FNavLocation loc;
+	bool result = ns->GetRandomReachablePointInRadius(certerLocation, radius, loc);
+	dest = loc.Location;
+	return result;
 }
 
 void UEnermyFSM::MoveState()
 {
-	if (!target || !me) return;
+	//if (!target || !me) return;
 	FVector destination = target->GetActorLocation();
 	FVector dir = destination - me->GetActorLocation();
-	me->AddMovementInput(dir.GetSafeNormal());
+	//me->AddMovementInput(dir.GetSafeNormal());
+	//ai->MoveToLocation(destination);
 
 	if (dir.Size() < attackRange)
 	{
 		mState = EEnermyState::Attack;
+
+		anim->animState = mState;
+
+		anim->bAttackPlay = true;
+
+		currentTime = attackDelayTime;
+
+
 	}
 }
 
@@ -101,6 +155,7 @@ void UEnermyFSM::AttackState()
 		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Red, TEXT("Attack!!"));
 
 		currentTime = 0;
+		anim->bAttackPlay = true;
 
 	}
 
@@ -108,6 +163,7 @@ void UEnermyFSM::AttackState()
 	if (distance > attackRange)
 	{
 		mState = EEnermyState::Move;
+		anim->animState = mState;
 	}
 
 
@@ -115,11 +171,33 @@ void UEnermyFSM::AttackState()
 
 void UEnermyFSM::DamegeState()
 {
+	currentTime += GetWorld()->DeltaTimeSeconds;
 
+	if (currentTime > damageDelayTime)
+	{
+		mState = EEnermyState::Idle;
+		currentTime = 0;
+
+		anim->animState = mState;
+
+	}
 }
 
 void UEnermyFSM::DieState()
 {
+	if (!bDieDone) return;
+	
+	
 
+	FVector p0 = me->GetActorLocation();
+	FVector vt = FVector::DownVector * dieSpeed * GetWorld()->DeltaTimeSeconds;
+	FVector p = p0 + vt;
+	me->SetActorLocation(p);
+
+
+	if (p.Z < -200.0f)
+	{
+		me->Destroy();
+	}
 }
 

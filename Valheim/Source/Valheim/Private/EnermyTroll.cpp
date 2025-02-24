@@ -18,8 +18,16 @@ AEnermyTroll::AEnermyTroll()
 		GetMesh()->SetSkeletalMesh(tempMesh.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -88), FRotator(0, -90, 0));
 	}
-	tempMesh->SetCollisionProfileName(FName("EnermyTroll"));
+	GetMesh()->SetCollisionProfileName(FName("EnermyTroll"));
+
 	fsm = CreateDefaultSubobject<UEnermyFSM>(TEXT("FSM"));
+
+	// 애니메이션 블루프린트
+	ConstructorHelpers::FClassFinder<UAnimInstance>tempClass(TEXT("/Script/Engine.AnimBlueprint'/Game/UP/Blueprints/ABP_TrollEnermy.ABP_TrollEnermy_C'"));
+	if(tempClass.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(tempClass.Class);
+	}
 }
 
 // Called when the game starts or when spawned

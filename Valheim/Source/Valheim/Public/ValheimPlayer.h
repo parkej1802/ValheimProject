@@ -286,4 +286,5 @@ public:
 	void FallingDamage();
 
 	float PreviousHeight;
+
 };

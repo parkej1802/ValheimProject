@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+//#include "Component/ActorComponent.h"
 #include "EnermyFSM.generated.h"
 
 
@@ -57,16 +57,41 @@ class AValheimPlayer* target;
 UPROPERTY()
 class AEnermyTroll* me;
 UPROPERTY(EditAnywhere, Category=FSM)
-float attackRange = 150.0f;
+float attackRange = 100.0f;
 
 UPROPERTY(EditAnywhere, Category=FSM)
 float attackDelayTime = 2.0f;
 // 피격 알림 이벤트 함수
 void OnDamageProcess();
+UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
+int32 hp = 7;
+
+UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
+float damageDelayTime = 2.0f;
+// 죽은뒤 아래로 사라지는 속도
+UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
+float dieSpeed = 50.0f;
+
+UPROPERTY()
+class UEnermyAnim* anim;
+
+UPROPERTY()
+class AAIController* ai;
+
+FVector randomPos;
+
+bool GetRandomPositionInNavMesh(FVector certerLocation, float radius, FVector
+	& dest);
+
+
+UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = FSM)
+bool bDieDone = false;
 
 void MoveState();
 void AttackState();
 void DamegeState();
 void DieState();
-		
+
+
+
 };
