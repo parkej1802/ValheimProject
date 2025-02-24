@@ -45,7 +45,7 @@ void ATree::TakeDamage(float Damage)
 		MeshComp->AddImpulse(ImpulseDirection * 5.f, NAME_None, true);*/
 
 
-		FVector SpawnLocation = GetActorLocation();
+		FVector SpawnLocation = GetActorLocation() + FVector(0.f, 0.f, 100.f);
 		FTransform SpawnTransform = GetActorTransform();
 		SpawnTransform.SetLocation(SpawnLocation);
 
