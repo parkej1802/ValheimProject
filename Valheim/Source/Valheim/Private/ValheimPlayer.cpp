@@ -319,7 +319,7 @@ void AValheimPlayer::FallingDamage()
 	{
 		float Damage = FallDistance / 100.0f;
 		CurrentHealth = FMath::Max(CurrentHealth - Damage, 0.0f);
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Falling Damage: %.2f"), Damage));
+		//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, FString::Printf(TEXT("Falling Damage: %.2f"), Damage));
 	}
 
 	PreviousHeight = CurrentHeight;

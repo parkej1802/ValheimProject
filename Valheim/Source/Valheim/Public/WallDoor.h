@@ -18,9 +18,6 @@ class VALHEIM_API AWallDoor : public AStaticMeshActor, public IBuildInterface
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void BeginPlay() override;
-
 public:
 	AWallDoor();
 

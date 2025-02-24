@@ -45,12 +45,6 @@ AWallDoor::AWallDoor()
 
 }
 
-void AWallDoor::BeginPlay()
-{
-	
-}
-
-
 void AWallDoor::SetBuildWallDoor()
 {
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("/Script/Engine.StaticMesh'/Game/UP/BuildingMaterial/Build/wall_door.wall_door'"));

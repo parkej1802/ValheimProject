@@ -50,6 +50,9 @@ void UInventorySlot::OnItemButtonClicked()
 
 				if (Item.ItemClass == AItem_Torch::StaticClass())
 				{
+					SpawnLocation = PlayerPawn->GetActorLocation() + FVector(50.0f, 0.0f, -100.0f);
+					SpawnTransform = PlayerPawn->GetActorTransform();
+					SpawnTransform.SetLocation(SpawnLocation);
 					SpawnedItem = GetWorld()->SpawnActor<AItem_Torch>(AItem_Torch::StaticClass(), SpawnTransform);
 				}
 				else

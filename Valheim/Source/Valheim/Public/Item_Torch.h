@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Item.h"
 #include "Components/PointLightComponent.h"
+#include "Components/SceneComponent.h"
 #include "Item_Torch.generated.h"
 
 /**
@@ -28,4 +29,7 @@ public:
 	UPointLightComponent* PointLight;
 
 	int32 Health = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* TorchComp;
 };

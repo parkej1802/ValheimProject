@@ -246,7 +246,6 @@ void UAC_BuildComponent::GetDataTableRowNames()
 			{
 				BuildableDataArray.Add(*RowData);
 				BuildableDataMap.Add(RowName, *RowData);
-				
 			}
 		}
 	}
@@ -285,6 +284,8 @@ void UAC_BuildComponent::DestroyBuild()
 
 		if (BuildActor)
 		{
+			FString ActorName = HitActor->GetName();
+			UE_LOG(LogTemp, Warning, TEXT("Destroyed Actor: %s"), *ActorName);
 			HitActor->Destroy();
 			HitActor = nullptr;
 		}
@@ -298,6 +299,7 @@ void UAC_BuildComponent::RotateRight()
 	BuildTransform.SetRotation(BuildTransform.GetRotation() * NewRotation);
 
 	BuildGhost->SetWorldTransform(BuildTransform);
+
 	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Rotating RIght!"));
 
 }

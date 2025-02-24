@@ -13,10 +13,11 @@ AItem_Torch::AItem_Torch()
 	RootComponent = MeshComp;
 
 	PointLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("TorchLight"));
-	PointLight->SetupAttachment(MeshComp);
+	PointLight->SetupAttachment(RootComponent);
 	PointLight->SetIntensity(300.0f);
 	PointLight->SetLightColor(FLinearColor(1.0f, 0.6f, 0.2f));
 	PointLight->SetAttenuationRadius(500.0f);
+	PointLight->SetRelativeLocation(FVector(0.f, 0.f, 125.f));
 	PointLight->SetCastShadows(true);
 	PointLight->bUseInverseSquaredFalloff = false;
 
@@ -25,11 +26,6 @@ AItem_Torch::AItem_Torch()
 
 	UTexture2D* LoadedTexture = Cast<UTexture2D>(TexturePath.TryLoad());
 	UStaticMesh* LoadedMesh = Cast<UStaticMesh>(MeshPath.TryLoad());
-
-	if (LoadedMesh)
-	{
-		MeshComp->SetStaticMesh(LoadedMesh);
-	}
 
 	FInventoryStruct TorchItem;
 	TorchItem.Name = FText::FromString("Torch");
@@ -43,12 +39,17 @@ AItem_Torch::AItem_Torch()
 	TorchItem.ItemClass = AItem_Torch::StaticClass();
 
 	SetItemData(TorchItem);
+
+	MeshComp->SetStaticMesh(LoadedMesh);
+	MeshComp->SetCollisionProfileName(FName("Item"));
 }
 
 
 void AItem_Torch::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MeshComp->SetSimulatePhysics(false);
 
 	/*GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Torch spawned successfully!"));
 	if (!PointLight)
