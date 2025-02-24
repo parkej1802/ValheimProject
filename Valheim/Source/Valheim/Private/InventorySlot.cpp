@@ -4,6 +4,7 @@
 #include "InventorySlot.h"
 #include "InventoryUI.h"
 #include "ValheimPlayer.h"
+#include "Item_Torch.h"
 
 void UInventorySlot::NativeConstruct()
 {
@@ -45,10 +46,21 @@ void UInventorySlot::OnItemButtonClicked()
 				FTransform SpawnTransform = PlayerPawn->GetActorTransform();
 				SpawnTransform.SetLocation(SpawnLocation);
 
-				AItem* SpawnedItem = GetWorld()->SpawnActor<AItem>(ItemClass, SpawnTransform);
+				AItem* SpawnedItem = nullptr;
+
+				if (Item.ItemClass == AItem_Torch::StaticClass())
+				{
+					SpawnedItem = GetWorld()->SpawnActor<AItem_Torch>(AItem_Torch::StaticClass(), SpawnTransform);
+				}
+				else
+				{
+					SpawnedItem = GetWorld()->SpawnActor<AItem>(ItemClass, SpawnTransform);
+				}
+
 				if (SpawnedItem) {
 					// GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, TEXT("Item Spawn in inventorySlot!"));
 					SpawnedItem->SetItemData(Item);
+
 				}
 
 				if (InventoryComp->ConnectedActor->InventoryUI)
