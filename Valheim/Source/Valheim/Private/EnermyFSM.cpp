@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "EnermyAnim.h"
-//#include "AIController.h"
+#include "AIController.h"
 #include "NavigationSystem.h"
 
 
@@ -31,13 +31,21 @@ void UEnermyFSM::BeginPlay()
 	// ...
 	auto actor = UGameplayStatics::GetActorOfClass(GetWorld(), AValheimPlayer::StaticClass());
 	target = Cast<AValheimPlayer>(actor);
+	//2.24 소유 객체 가져오기
 	me = Cast<AEnermyTroll>(GetOwner());
-
-	anim = Cast<UEnermyAnim>(me->GetMesh()->GetAnimInstance());
+	if (me)
+	{
+		anim = Cast<UEnermyAnim>(me->GetMesh()->GetAnimInstance());
+	}
+	// 2.23 책에 나오는 내용/ 소유객체 가져오기
+	//anim = Cast<UEnermyAnim>(me->GetMesh()->GetAnimInstance());
 
 	////AAIController 할당하기
-	//ai = Cast<AAIController>(me->GetController());
-	//
+	if(!ai)
+	{
+		me->SpawnDefaultController();
+	ai = Cast<AAIController>(me->GetController());
+	}
 }
 
 
@@ -81,24 +89,25 @@ void UEnermyFSM::IdleState()
 	if (currentTime > idleDelayTime)
 	{
 		mState = EEnermyState::Move;
-		currentTime = 0;
+		currentTime = 0.f;
 
 		anim->animState = mState;
 	}
 }
 
-void UEnermyFSM::OnDamageProcess()
-{
-	hp--;
+void UEnermyFSM::OnDamageProcess(int32 damage)
+{	//체력감소
+	hp -= damage;
+	// 체력이 남아있는지 체크
 	if (hp > 0)
 	{
 		mState = EEnermyState::Damage;
 
-		currentTime = 0;
+		//currentTime = 0;
 		// 피격 애니메이션 재생
-		int32 index = FMath::RandRange(0, 1);
-		FString SectionName = FString::Printf(TEXT("Damage%d"), index);
-		anim->PlayDamageAnim(FName(*SectionName));
+		int32 randValue = FMath::RandRange(0, 1);
+		FString SectionName = FString::Printf(TEXT("Damage%d"), randValue);
+		me->PlayAnimMontage(anim->EnermyMontage, 1.f, FName(*SectionName));
 	}
 
 	else
@@ -106,13 +115,18 @@ void UEnermyFSM::OnDamageProcess()
 		mState = EEnermyState::Die;
 		me->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		// 죽음 애니메이션 재생
-		anim->PlayDamageAnim(TEXT("Die"));
+		me->PlayAnimMontage(anim->EnermyMontage, 1.f,TEXT("Die"));
 	}
 	anim->animState = mState;
 
 	
 
 	
+}
+// 2.24 공격이 끝날때
+void UEnermyFSM::OnAttackEnd()
+{
+	anim->bAttackPlay = false;
 }
 
 bool UEnermyFSM::GetRandomPositionInNavMesh(FVector certerLocation, float radius, FVector& dest)
@@ -130,7 +144,7 @@ void UEnermyFSM::MoveState()
 	FVector destination = target->GetActorLocation();
 	FVector dir = destination - me->GetActorLocation();
 	//me->AddMovementInput(dir.GetSafeNormal());
-	//ai->MoveToLocation(destination);
+	ai->MoveToLocation(destination);
 
 	if (dir.Size() < attackRange)
 	{
@@ -154,7 +168,7 @@ void UEnermyFSM::AttackState()
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Red, TEXT("Attack!!"));
 
-		currentTime = 0;
+		currentTime = 0.f;
 		anim->bAttackPlay = true;
 
 	}
@@ -162,7 +176,10 @@ void UEnermyFSM::AttackState()
 	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
 	if (distance > attackRange)
 	{
+		// 상태를 이동(Move)상태로 전환하고 싶다.
 		mState = EEnermyState::Move;
+
+
 		anim->animState = mState;
 	}
 
@@ -176,7 +193,7 @@ void UEnermyFSM::DamegeState()
 	if (currentTime > damageDelayTime)
 	{
 		mState = EEnermyState::Idle;
-		currentTime = 0;
+		currentTime = 0.f;
 
 		anim->animState = mState;
 

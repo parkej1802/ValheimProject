@@ -54,3 +54,15 @@ void AEnermyTroll::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+/*
+// 2.24 Damage관련 AI솔루션
+float AEnermyTroll::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	if (UEnermyFSM* FSM = FindComponentByClass<UEnermyFSM>())
+	{
+		FSM->OnDamageProcess(DamageAmount);
+	}
+
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+}
+*/

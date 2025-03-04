@@ -62,7 +62,8 @@ float attackRange = 100.0f;
 UPROPERTY(EditAnywhere, Category=FSM)
 float attackDelayTime = 2.0f;
 // 피격 알림 이벤트 함수
-void OnDamageProcess();
+void OnDamageProcess(int32 damage);
+
 UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
 int32 hp = 7;
 
@@ -71,9 +72,11 @@ float damageDelayTime = 2.0f;
 // 죽은뒤 아래로 사라지는 속도
 UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
 float dieSpeed = 50.0f;
-
+// 사용중인 애니메이션 블루프린트
 UPROPERTY()
 class UEnermyAnim* anim;
+
+void OnAttackEnd();
 
 UPROPERTY()
 class AAIController* ai;

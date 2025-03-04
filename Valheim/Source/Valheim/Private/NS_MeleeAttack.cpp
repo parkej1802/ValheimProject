@@ -8,6 +8,8 @@
 #include "DrawDebugHelpers.h"
 #include "Engine/Engine.h"
 #include "Tree.h"
+#include "EnermyTroll.h"
+#include "Engine/DamageEvents.h"
 
 void UNS_MeleeAttack::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
@@ -77,6 +79,16 @@ void UNS_MeleeAttack::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequence
 					if (HitTree)
 					{
 						HitTree->TakeDamage(15.0f);
+					}
+				}
+				// 2.24 KMS 적에게 damage AI솔루션
+				if (HitActor->IsA<AEnermyTroll>())
+				{
+					AEnermyTroll* Enemy = Cast<AEnermyTroll>(HitActor);
+					if (Enemy)
+					{
+						FDamageEvent DamageEvent;
+						Enemy->TakeDamage(20.0f, DamageEvent, nullptr, Owner);
 					}
 				}
 

@@ -6,7 +6,10 @@
 
 void UEnermyAnim::OnEndAttackAnimation()
 {
-	bAttackPlay = false;
+	if (AEnermyTroll* enermy = Cast<AEnermyTroll>(TryGetPawnOwner()))
+	{
+		enermy->fsm->OnAttackEnd();
+	}
 }
 
 void UEnermyAnim::AnimNotify_DieEnd()

@@ -63,7 +63,7 @@ void AAxeWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor
 			if (EnemyFSM)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("Enemy FSM Found! Calling OnDamageProcess()"));
-				EnemyFSM->OnDamageProcess();
+				EnemyFSM->OnDamageProcess(1);
 			}
 
 

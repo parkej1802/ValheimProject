@@ -30,5 +30,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = FSMComponent)
 	class UEnermyFSM* fsm;
 	
+	// 2.24 Damage관련 AI솔루션
+	/*
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	*/
 
 };
