@@ -60,7 +60,7 @@ UPROPERTY(EditAnywhere, Category=FSM)
 float attackRange = 100.0f;
 
 UPROPERTY(EditAnywhere, Category=FSM)
-float attackDelayTime = 2.0f;
+float attackDelayTime = 4.0f;
 // 피격 알림 이벤트 함수
 void OnDamageProcess();
 UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
@@ -92,6 +92,7 @@ void AttackState();
 void DamegeState();
 void DieState();
 
-
+ float attackAnimTime = 3;
+ float currentAttackAnimTime = 0.f;
 
 };

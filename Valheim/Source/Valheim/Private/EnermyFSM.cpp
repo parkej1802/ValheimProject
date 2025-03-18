@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "EnermyAnim.h"
-//#include "AIController.h"
+#include "AIController.h"
 #include "NavigationSystem.h"
 
 
@@ -36,7 +36,7 @@ void UEnermyFSM::BeginPlay()
 	anim = Cast<UEnermyAnim>(me->GetMesh()->GetAnimInstance());
 
 	////AAIController 할당하기
-	//ai = Cast<AAIController>(me->GetController());
+	ai = Cast<AAIController>(me->GetController());
 	//
 }
 
@@ -57,7 +57,7 @@ void UEnermyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 */
 	// ...
 	FString logMsg = UEnum::GetValueAsString(mState);
-	GEngine->AddOnScreenDebugMessage(0, 1, FColor::Cyan, logMsg);
+	//GEngine->AddOnScreenDebugMessage(0, 1, FColor::Cyan, logMsg);
 
 	switch(mState)
 	{
@@ -109,10 +109,6 @@ void UEnermyFSM::OnDamageProcess()
 		anim->PlayDamageAnim(TEXT("Die"));
 	}
 	anim->animState = mState;
-
-	
-
-	
 }
 
 bool UEnermyFSM::GetRandomPositionInNavMesh(FVector certerLocation, float radius, FVector& dest)
@@ -129,11 +125,14 @@ void UEnermyFSM::MoveState()
 	//if (!target || !me) return;
 	FVector destination = target->GetActorLocation();
 	FVector dir = destination - me->GetActorLocation();
-	//me->AddMovementInput(dir.GetSafeNormal());
-	//ai->MoveToLocation(destination);
+	me->AddMovementInput(dir.GetSafeNormal());
 
+	ai->MoveToLocation(destination);
+	
 	if (dir.Size() < attackRange)
 	{
+		ai->StopMovement();
+
 		mState = EEnermyState::Attack;
 
 		anim->animState = mState;
@@ -141,8 +140,6 @@ void UEnermyFSM::MoveState()
 		anim->bAttackPlay = true;
 
 		currentTime = attackDelayTime;
-
-
 	}
 }
 
@@ -152,7 +149,7 @@ void UEnermyFSM::AttackState()
 	currentTime += GetWorld()->DeltaTimeSeconds;
 	if (currentTime > attackDelayTime)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Red, TEXT("Attack!!"));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.5f, FColor::Red, TEXT("Attack!!"));
 
 		currentTime = 0;
 		anim->bAttackPlay = true;
@@ -160,13 +157,14 @@ void UEnermyFSM::AttackState()
 	}
 
 	float distance = FVector::Distance(target->GetActorLocation(), me->GetActorLocation());
-	if (distance > attackRange)
+
+	currentAttackAnimTime += GetWorld()->DeltaTimeSeconds;
+	if (distance > attackRange && attackDelayTime < currentAttackAnimTime)
 	{
 		mState = EEnermyState::Move;
 		anim->animState = mState;
+		currentAttackAnimTime = 0.f;
 	}
-
-
 }
 
 void UEnermyFSM::DamegeState()
@@ -187,13 +185,10 @@ void UEnermyFSM::DieState()
 {
 	if (!bDieDone) return;
 	
-	
-
 	FVector p0 = me->GetActorLocation();
 	FVector vt = FVector::DownVector * dieSpeed * GetWorld()->DeltaTimeSeconds;
 	FVector p = p0 + vt;
 	me->SetActorLocation(p);
-
 
 	if (p.Z < -200.0f)
 	{
