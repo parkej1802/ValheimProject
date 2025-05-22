@@ -15,7 +15,10 @@ class VALHEIM_API UEnermyAnim : public UAnimInstance
 {
 	GENERATED_BODY()
 
+	
+
 public:
+	UEnermyAnim();
 UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category=FSM)
 	EEnermyState animState;
 
@@ -23,13 +26,34 @@ UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category=FSM)
 bool bAttackPlay = false;
 
 
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category=FSM)
+bool bDamaged = false;
+
+UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,Category=FSM)
+bool bDead = false;
+
 UFUNCTION(BlueprintCallable, Category = FSMEvent)
 void OnEndAttackAnimation();
 
 UFUNCTION(BlueprintImplementableEvent, Category = FSMEvent)
 void PlayDamageAnim(FName SectionName);
 
-//죽음 상태 애니메이션 종료여부
+
+UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+class UAnimMontage* DeathAnimMontage;
+
+void PlayDeathAnim();
+void EndDeathAnim();
+
+UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+class UAnimMontage* DamagedAnimMontage;
+
+void PlayDamagedAnim();
+void EndDamagedAnim();
+
+float DamagedDuration = 0.f;
+float DeathDuration = 0.f;
+float currentTime = 0.f;
 
 
 FORCEINLINE

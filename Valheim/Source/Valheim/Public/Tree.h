@@ -37,7 +37,7 @@ public:
 
 	int32 Health = 100;
 
-	void TakeDamage(float Damage);
+	void TakeDamaged(float Damage);
 
 	bool HasTakenDamage = false;
 

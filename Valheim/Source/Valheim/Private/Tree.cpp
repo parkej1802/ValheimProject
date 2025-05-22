@@ -35,7 +35,7 @@ void ATree::Tick(float DeltaTime)
 	
 }
 
-void ATree::TakeDamage(float Damage)
+void ATree::TakeDamaged(float Damage)
 {
 	Health -= Damage;
 	if (Health <= 0)

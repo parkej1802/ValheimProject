@@ -8,6 +8,8 @@
 #include "DrawDebugHelpers.h"
 #include "Engine/Engine.h"
 #include "Tree.h"
+#include "EnermyTroll.h"
+#include "EnermyFSM.h"
 
 void UNS_MeleeAttack::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
@@ -76,9 +78,20 @@ void UNS_MeleeAttack::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequence
 					ATree* HitTree = Cast<ATree>(HitActor);
 					if (HitTree)
 					{
-						HitTree->TakeDamage(15.0f);
+						HitTree->TakeDamaged(15.0f);
 					}
 					
+				}
+
+				if (HitActor->IsA<AEnermyTroll>())
+				{
+					AEnermyTroll* HitEnemy = Cast<AEnermyTroll>(HitActor);
+					if (HitEnemy)
+					{
+						HitEnemy->fsm->mState = EEnermyState::Damage;
+						HitEnemy->fsm->hp -= 1;
+						break;
+					}
 				}
 
 				/*if (GEngine)

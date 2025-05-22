@@ -48,7 +48,7 @@ EEnermyState mState = EEnermyState::Idle;
 void IdleState();
 
 UPROPERTY(EditDefaultsOnly, Category=FSM)
-float idleDelayTime = 2;
+float idleDelayTime = 1;
 
 float currentTime = 0;
 
@@ -64,7 +64,7 @@ float attackDelayTime = 4.0f;
 // 피격 알림 이벤트 함수
 void OnDamageProcess();
 UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
-int32 hp = 7;
+int32 hp = 30;
 
 UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category =FSM)
 float damageDelayTime = 2.0f;
@@ -94,5 +94,7 @@ void DieState();
 
  float attackAnimTime = 3;
  float currentAttackAnimTime = 0.f;
+
+ bool IsDamaged = false;
 
 };

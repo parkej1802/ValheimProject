@@ -56,8 +56,10 @@ void UEnermyFSM::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 	}
 */
 	// ...
+
+
 	FString logMsg = UEnum::GetValueAsString(mState);
-	//GEngine->AddOnScreenDebugMessage(0, 1, FColor::Cyan, logMsg);
+	// GEngine->AddOnScreenDebugMessage(0, 1, FColor::Cyan, logMsg);
 
 	switch(mState)
 	{
@@ -95,10 +97,11 @@ void UEnermyFSM::OnDamageProcess()
 		mState = EEnermyState::Damage;
 
 		currentTime = 0;
-		// 피격 애니메이션 재생
-		int32 index = FMath::RandRange(0, 1);
-		FString SectionName = FString::Printf(TEXT("Damage%d"), index);
-		anim->PlayDamageAnim(FName(*SectionName));
+		//// 피격 애니메이션 재생
+		//int32 index = FMath::RandRange(0, 1);
+		//FString SectionName = FString::Printf(TEXT("Damage%d"), index);
+		// anim->PlayDamageAnim(FName(*SectionName));
+		anim->bDamaged = true;
 	}
 
 	else
@@ -171,6 +174,13 @@ void UEnermyFSM::DamegeState()
 {
 	currentTime += GetWorld()->DeltaTimeSeconds;
 
+	if (hp <= 0) {
+		mState = EEnermyState::Die;
+		anim->animState = EEnermyState::Die;
+		return;
+	}
+	anim->animState = mState;
+
 	if (currentTime > damageDelayTime)
 	{
 		mState = EEnermyState::Idle;
@@ -183,16 +193,12 @@ void UEnermyFSM::DamegeState()
 
 void UEnermyFSM::DieState()
 {
-	if (!bDieDone) return;
-	
-	FVector p0 = me->GetActorLocation();
-	FVector vt = FVector::DownVector * dieSpeed * GetWorld()->DeltaTimeSeconds;
-	FVector p = p0 + vt;
-	me->SetActorLocation(p);
-
-	if (p.Z < -200.0f)
+	currentTime += GetWorld()->DeltaTimeSeconds;
+	anim->animState = EEnermyState::Die;
+	if (currentTime > 5)
 	{
 		me->Destroy();
 	}
+	
 }
 

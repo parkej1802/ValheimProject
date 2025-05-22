@@ -16,4 +16,5 @@ class VALHEIM_API UNS_MeleeAttack : public UAnimNotifyState
 
 public:
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime) override;
+	bool IsDamaged = false;
 };
